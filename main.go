@@ -3,15 +3,13 @@ package main
 import (
 	"fmt"
 	"goredisclone/handlers"
+	"goredisclone/variables"
 	"io"
 	"log"
 	"net"
 	"strings"
-	"sync"
+	"time"
 )
-
-var storage = make(map[string]string)
-var mu sync.Mutex
 
 func main() {
 	port := ":8001"
@@ -22,6 +20,9 @@ func main() {
 
 	log.Println("Redis clone connectect port", port)
 
+	// cleanup worker for expired keys
+	go cleanupWorker()
+
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
@@ -31,7 +32,9 @@ func main() {
 
 		fmt.Println("new client connected:", conn.LocalAddr())
 
+		// handle client connection
 		go handleConnection(conn)
+
 	}
 }
 
@@ -78,11 +81,25 @@ func dispatch(conn net.Conn, command string, args []string) {
 	case "PING":
 		handlers.PingHandler(conn)
 	case "SET":
-		handlers.SetHanlder(conn, args, storage, &mu)
+		handlers.SetHanlder(conn, args)
 	case "GET":
-		handlers.GetHandler(conn, args, storage, &mu)
+		handlers.GetHandler(conn, args)
 	default:
 		conn.Write([]byte("Unknown command\r\n"))
 	}
+}
 
+func cleanupWorker() {
+	for {
+		time.Sleep(5 * time.Second)
+
+		variables.Mu.Lock()
+		for key, timeEx := range variables.Expirations {
+			if time.Now().After(timeEx) {
+				delete(variables.Expirations, key)
+				delete(variables.Storage, key)
+			}
+		}
+		variables.Mu.Unlock()
+	}
 }

@@ -1,23 +1,33 @@
 package handlers
 
 import (
+	"goredisclone/variables"
 	"net"
-	"sync"
+	"time"
 )
 
-func GetHandler(conn net.Conn, args []string, storage map[string]string, mu *sync.Mutex) {
-	if len(args) != 1 {
+func GetHandler(conn net.Conn, args []string) {
+	if len(args) < 1 {
 		conn.Write([]byte("ERR wrong number of arguments\n"))
 		return
 	}
 
 	key := args[0]
-	mu.Lock()
-	value, exists := storage[key]
-	defer mu.Unlock()
 
+	variables.Mu.Lock()
+	defer variables.Mu.Unlock()
+
+	value, exists := variables.Storage[key]
 	if !exists {
-		conn.Write([]byte("ERR key not found\n"))
+		conn.Write([]byte("NULL\n"))
+		return
+	}
+
+	expireAt, exists := variables.Expirations[key]
+	if exists && time.Now().After(expireAt) {
+		conn.Write([]byte("NULL\n"))
+		delete(variables.Storage, key)
+		delete(variables.Expirations, key)
 		return
 	}
 

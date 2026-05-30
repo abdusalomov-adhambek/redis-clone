@@ -1,0 +1,362 @@
+# Redis Clone — 9-ETAP Nazariyasi
+
+# ✅ TTL (Time To Live)
+
+TTL:
+
+Time To Live
+
+Ma'nosi:
+
+ma'lumot qancha vaqt yashashi
+
+Misol:
+
+SET otp 1234 EX 60
+
+Bu:
+
+otp 60 soniya yashaydi
+
+degani.
+
+---
+
+# ✅ Expiration
+
+Expiration:
+
+TTL tugagandan keyin
+ma'lumotni o'chirish jarayoni
+
+Misol:
+
+token -> abc123
+TTL   -> 30s
+
+30 soniyadan keyin:
+
+token
+
+o'chiriladi.
+
+---
+
+# ✅ Expired Key
+
+Expired Key:
+
+vaqti tugagan key
+
+Misol:
+
+otp -> 1234
+
+TTL tugagach:
+
+expired key
+
+hisoblanadi.
+
+---
+
+# ✅ Nega TTL Kerak?
+
+TTL quyidagi holatlarda ishlatiladi:
+
+### OTP
+
+123456
+
+5 minutdan keyin o'chishi kerak.
+
+---
+
+### Session
+
+user-session
+
+1 soatdan keyin tugashi kerak.
+
+---
+
+### Cache
+
+API natijalari.
+
+Ma'lum vaqtdan keyin yangilanishi kerak.
+
+---
+
+# ✅ Cache
+
+Cache:
+
+tezroq ishlash uchun
+vaqtinchalik saqlanadigan ma'lumot
+
+Misol:
+
+Weather API natijasi
+
+Har safar API'ga so'rov yubormasdan:
+
+Redis cache
+
+ishlatiladi.
+
+---
+
+# ✅ Expire Time
+
+Expire Time:
+
+ma'lumot qachon o'chishini
+bildiruvchi vaqt
+
+Misol:
+
+expireAt = 1717000000
+
+Bu key qachon o'chishini bildiradi.
+
+---
+
+# ✅ Unix Timestamp
+
+Unix Timestamp:
+
+1970-01-01 dan boshlab
+o'tgan soniyalar soni
+
+Misol:
+
+1717000000
+
+Bu aniq vaqt nuqtasini bildiradi.
+
+---
+
+# ✅ Nega Timestamp Ishlatamiz?
+
+TTL:
+
+60 soniya
+
+bo'lishi mumkin.
+
+Lekin:
+
+hozir nechchi soniya o'tdi?
+
+hisoblash kerak bo'ladi.
+
+Shuning uchun:
+
+expireAt = now + ttl
+
+saqlanadi.
+
+---
+
+# ✅ ExpireAt
+
+ExpireAt:
+
+key qachon o'chishini
+bildiruvchi timestamp
+
+Misol:
+
+now = 1000
+
+ttl = 60
+
+expireAt = 1060
+
+Agar:
+
+now >= 1060
+
+bo'lsa:
+
+expired
+
+hisoblanadi.
+
+---
+
+# ✅ Lazy Expiration
+
+Lazy Expiration:
+
+key ishlatilganda
+expired bo'lganmi yo'qligini
+tekshirish
+
+Misol:
+
+GET otp
+
+keldi.
+
+Server:
+
+otp expired bo'lganmi?
+
+tekshiradi.
+
+Agar expired bo'lsa:
+
+o'chiradi
+
+---
+
+# ✅ Active Expiration
+
+Active Expiration:
+
+background worker
+expired keylarni
+o'zi qidirib yuradi
+
+Misol:
+
+Har sekund:
+
+expired keylarni tekshir
+
+Topsa:
+
+o'chir
+
+---
+
+# ✅ Lazy vs Active
+
+### Lazy Expiration
+
+GET bo'lganda tekshiradi
+
+---
+
+### Active Expiration
+
+o'zi tekshiradi
+
+---
+
+# ✅ Background Goroutine
+
+Background Goroutine:
+
+foydalanuvchi requestlaridan
+mustaqil ishlaydigan goroutine
+
+Misol:
+
+cleanup worker
+
+---
+
+# ✅ Cleanup Worker
+
+Cleanup Worker:
+
+expired keylarni
+storage'dan o'chiruvchi worker
+
+Vazifasi:
+
+storage'ni toza saqlash
+
+---
+
+# ✅ Cleanup
+
+Cleanup:
+
+keraksiz ma'lumotlarni
+o'chirish jarayoni
+
+Bizda:
+
+expired keylarni
+storage'dan olib tashlash
+
+---
+
+# ✅ TTL Storage Muammosi
+
+Oddiy storage:
+
+map[string]string
+
+faqat value saqlaydi.
+
+TTL uchun esa:
+
+key
+↓
+value
+↓
+expire time
+
+ham saqlanishi kerak.
+
+---
+
+# ✅ TTL Architecture
+
+SET otp 1234 EX 60
+        ↓
+expireAt saqlanadi
+        ↓
+storage
+
+---
+
+Keyin:
+
+Background Worker
+        ↓
+Expired Keylarni Tekshiradi
+        ↓
+Delete
+
+---
+
+# ✅ Redis Clone Architecture (9-ETAP)
+
+Client
+ ↓
+SET key value EX ttl
+ ↓
+Storage
+ ↓
+ExpireAt
+ ↓
+Background Worker
+ ↓
+Expiration Check
+ ↓
+Delete Expired Key
+
+---
+
+# ✅ 9-ETAPda O'rganilganlar
+
+TTL (Time To Live)
+Expiration
+Expired Key
+Cache
+Expire Time
+ExpireAt
+Unix Timestamp
+Lazy Expiration
+Active Expiration
+Background Goroutine
+Cleanup Worker
+Cleanup
+
+Bu etap Redis Clone'ga avtomatik ma'lumot o'chirish funksiyasini qo'shish uchun asos bo'lib xizmat qiladi.
