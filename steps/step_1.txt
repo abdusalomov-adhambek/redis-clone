@@ -1,0 +1,175 @@
+# Redis Clone — 1-ETAP Nazariyasi
+
+## ✅ Port
+
+Port — kompyuterdagi qaysi dastur requestni olishini bildiradi.
+
+Misollar:
+
+80   -> HTTP
+443  -> HTTPS
+6379 -> Redis
+5432 -> PostgreSQL
+
+Portni:
+    “dasturga kirish eshigi” deb tushunsa bo‘ladi.
+
+---
+
+# ✅ Listen (Tinglash)
+
+Listen:
+OS(kernel)ga:
+    "shu portga kelgan TCP connectionlarni menga ber" deyish.
+
+Misol:
+
+net.Listen("tcp", ":6379")
+
+Bu:
+    6379 portni och TCP connectionlarni kut deganidir.
+
+Muhim:
+
+* Listen portni ochadi
+* Clientlarni kutadi
+
+---
+
+# ✅ Accept (Qabul qilish)
+
+Accept:
+    yangi client connectionni qabul qilish
+
+Misol:
+
+conn, err := listener.Accept()
+
+Client ulanmaguncha:
+    kod shu joyda kutadi.
+
+---
+
+# ✅ Connection (Ulanish)
+
+Connection (`conn`) — client bilan server orasidagi aloqa tunnelidir.
+
+Shu orqali:
+
+* ma’lumot o‘qiymiz
+* ma’lumot yuboramiz
+
+Senior levelda:
+    full duplex stream
+
+ya’ni:
+    bir vaqtning o‘zida:
+
+* read (o‘qish)
+* write (yozish)
+
+mumkin.
+
+---
+
+# ✅ Blocking Operation
+
+Blocking operation:
+kod bir joyda kutib qoladigan operatsiya.
+
+Misol:
+    listener.Accept()
+
+
+Agar client ulanmasa:
+    kod shu joyda to‘xtab kutadi.
+
+Bu:
+    blocking deyiladi.
+
+---
+
+# ✅ Persistent Connection (Doimiy ulanish)
+
+Persistent connection:
+client va server connectionni yopmasdan uzoq vaqt ishlatadi.
+
+Redis:
+
+1 marta ulanadi
+ko‘p command yuboradi
+
+Masalan:
+
+SET
+GET
+DEL
+INCR
+
+hammasi bitta connection ichida ishlaydi.
+
+---
+
+# ✅ HTTP vs TCP
+
+Muhim tushuncha:
+
+HTTP = protocol
+TCP  = transport
+
+HTTP ham TCP ustida ishlaydi.
+
+Redis:
+
+* TCP ishlatadi
+* lekin HTTP ishlatmaydi
+* o‘zining RESP protocolini ishlatadi
+
+HTTP:
+
+* stateless
+* header katta
+* request/response oriented
+
+Redis esa:
+
+* tezlik
+* minimal bytes
+* persistent connection
+
+xohlaydi.
+
+---
+
+# ✅ Infinite Loop (Cheksiz loop)
+
+for {}
+    serverni doim ishlatib turadi.
+
+Bu:
+    clientlarni cheksiz qabul qilish uchun kerak.
+
+Aks holda:
+    server 1 ta clientdan keyin to‘xtab qoladi.
+
+---
+
+# ✅ IPv4 vs IPv6
+
+IPv4:
+    127.0.0.1
+
+
+IPv6:
+    ::1
+
+
+Ikkalasi ham localhost degani.
+
+Misol: [::1]:8001
+Bu:
+
+IP   -> ::1
+PORT -> 8001
+
+deganidir.

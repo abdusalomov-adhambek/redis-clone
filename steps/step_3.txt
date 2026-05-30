@@ -1,0 +1,246 @@
+# Redis Clone — 3-ETAP Nazariyasi
+
+# ✅ Multiple Messages
+
+Haqiqiy Redis:
+
+1 ta connection ichida
+ko'p command qabul qiladi
+
+Masalan:
+
+SET
+GET
+DEL
+PING
+
+hammasi bitta connection ichida ishlaydi.
+
+Server:
+
+connection yopilmaguncha
+doim o'qib turishi kerak
+
+---
+
+# ✅ Connection Lifecycle
+
+Connection lifecycle:
+connectionning boshidan oxirigacha bo'lgan jarayon.
+
+Lifecycle:
+
+1. Client ulanadi
+2. Command yuboradi
+3. Server javob beradi
+4. Yana command yuboradi
+5. Disconnect bo'ladi
+6. Cleanup qilinadi
+
+Bu:
+
+persistent connection lifecycle
+
+deyiladi.
+
+---
+
+# ✅ Outer Loop
+
+Outer loop:
+
+yangi client connectionlarni qabul qiladi
+
+Architecture:
+
+Outer loop -> connections management
+
+Misol:
+
+for {
+    listener.Accept()
+}
+
+Bu:
+
+doim yangi client kutish
+
+uchun kerak.
+
+---
+
+# ✅ Inner Loop
+
+Inner loop:
+
+bitta clientning commandlarini doimiy o'qish
+
+uchun kerak.
+
+Architecture:
+
+Inner loop -> command management
+
+Misol:
+
+for {
+    conn.Read()
+}
+
+Bu:
+
+shu clientdan cheksiz command o'qish
+
+degani.
+
+---
+
+# ✅ 2 ta loop architecture'i
+
+Outer loop  -> yangi clientlar
+Inner loop  -> shu clientning commandlari
+
+To'liq flow:
+
+Server
+  ↓
+Outer loop
+  ↓
+Accept client
+  ↓
+Inner loop
+  ↓
+Read command
+  ↓
+Read command
+  ↓
+Disconnect
+
+---
+
+# ✅ EOF (End Of File)
+
+EOF:
+
+stream tugadi
+
+degan ma'no.
+
+Networkingda odatda:
+
+client connectionni yopdi
+
+degani.
+
+Masalan:
+
+CTRL + C
+
+qilganda:
+server EOF oladi.
+
+---
+
+# ✅ Disconnect
+
+Disconnect:
+
+client connectiondan chiqib ketishi
+
+degani.
+
+Disconnect bo'lganda:
+server:
+
+shu connection bilan ishlashni to'xtatishi kerak
+
+---
+
+# ✅ Cleanup
+
+Cleanup:
+
+resource'larni tozalash
+
+degani.
+
+Masalan:
+
+conn.Close()
+
+Bu:
+
+* TCP socketni yopadi
+* OS resource'larini bo'shatadi
+
+---
+
+# ✅ Resource Management
+
+Har bir connection:
+
+resource
+
+hisoblanadi.
+
+Agar cleanup qilinmasa:
+
+* memory leak
+* file descriptor leak
+* too many open files
+* server crash
+
+bo'lishi mumkin.
+
+Shuning uchun:
+
+conn.Close()
+
+juda muhim.
+
+---
+
+# ✅ break
+break
+
+inner loopdan chiqish uchun ishlatiladi.
+
+Masalan:
+
+* EOF
+* read error
+
+bo'lsa:
+    shu client bilan ishlash tugaydi, Outer loop esa ishlashda davom etadi.
+
+---
+
+# ✅ Persistent Connection Architecture
+
+Redis:
+
+stateful persistent TCP connection
+
+ishlatadi.
+
+Flow:
+
+Client ulanadi
+↓
+Ko'p command yuboradi
+↓
+Server javob beradi
+↓
+Disconnect
+↓
+Cleanup
+
+Bu architecture:
+
+* Redis
+* PostgreSQL
+* SSH
+* WebSocket
+* Multiplayer game server
+
+larda ishlatiladi.

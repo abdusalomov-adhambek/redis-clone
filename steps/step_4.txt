@@ -1,0 +1,284 @@
+# Redis Clone — 4-ETAP Nazariyasi
+
+# ✅ Concurrency
+
+Concurrency:
+
+bir nechta taskni bir vaqtda boshqarish
+
+Asosiy maqsad:
+
+bitta client boshqasini bloklab qo'ymasligi
+
+Misol:
+
+Client-1 kutyapti
+Client-2 ishlashda davom etadi
+Client-3 ishlashda davom etadi
+
+Redis kabi serverlarda minglab clientlar bir vaqtda ulanadi.
+
+---
+
+# ✅ Hozirgi Server Muammosi
+
+Agar concurrency bo'lmasa:
+
+1 ta client ulanadi
+Read() ichida kutadi
+
+Server:
+
+boshqa clientlarni qabul qila olmaydi
+
+Sababi:
+
+Read() blocking operation
+
+hisoblanadi.
+
+---
+
+# ✅ Concurrent va Parallel Farqi
+
+## Concurrent
+
+bir nechta taskni boshqarish
+
+CPU tasklarni juda tez almashtirib ishlaydi.
+
+Misol:
+
+Task A
+Task B
+Task C
+
+Ishlash:
+
+A -> B -> C -> A -> B -> C
+
+Natijada bir vaqtda ishlayotgandek ko'rinadi.
+
+---
+
+## Parallel
+
+haqiqatan ham bir vaqtda ishlash
+
+Misol:
+
+Core 1 -> Task A
+Core 2 -> Task B
+Core 3 -> Task C
+
+Bir vaqtning o'zida bajariladi.
+
+---
+
+# ✅ Goroutine
+
+Goroutine:
+
+Go runtime boshqaradigan lightweight thread
+
+Afzalliklari:
+
+* juda yengil
+* kam xotira ishlatadi
+* minglab goroutine ochish mumkin
+* schedulingni Go runtime boshqaradi
+
+---
+
+# ✅ Thread
+
+Thread:
+
+kod bajariladigan execution flow
+
+OS thread:
+
+* qimmatroq
+* ko'proq memory ishlatadi
+
+Goroutine esa threaddan yengilroq.
+
+---
+
+# ✅ go Keyword
+
+go handleConnection(conn)
+
+Bu:
+
+yangi goroutine och
+
+deganidir.
+
+Natijada:
+
+main goroutine kutib turmaydi
+
+va keyingi clientlarni qabul qilishda davom etadi.
+
+---
+
+# ✅ Main Goroutine
+
+Programma ishga tushganda:
+
+main goroutine
+
+yaratiladi.
+
+Oldin:
+
+main goroutine
+hamma ishni qilardi
+
+Endi:
+
+main goroutine
+faqat Accept qiladi
+
+---
+
+# ✅ Worker Goroutine
+
+Har bir client uchun:
+
+alohida goroutine
+
+yaratiladi.
+
+Misol:
+
+Client-1 -> Goroutine
+Client-2 -> Goroutine
+Client-3 -> Goroutine
+
+Har biri mustaqil ishlaydi.
+
+---
+
+# ✅ Connection Isolation
+
+Isolation:
+
+bir clientning holati boshqasiga ta'sir qilmasligi
+
+Misol:
+
+Client-1 kutyapti
+
+bo'lsa ham:
+
+Client-2 ishlashda davom etadi
+
+---
+
+# ✅ handleConnection()
+
+handleConnection:
+
+har bir clientni boshqaruvchi function
+
+Vazifasi:
+
+* commandlarni o'qish
+* javob qaytarish
+* disconnectni boshqarish
+* cleanup qilish
+
+---
+
+# ✅ Separation of Concerns
+
+Separation of Concerns:
+
+har bir vazifani alohida joyga ajratish
+
+Misol:
+
+main()             -> connection accept qilish
+handleConnection() -> client bilan ishlash
+
+Bu architecture'ni toza qiladi.
+
+---
+
+# ✅ defer
+
+defer conn.Close()
+
+Bu:
+
+function tugaganda
+conn.Close() avtomatik ishlasin
+
+degani.
+
+---
+
+# ✅ conn.Close()
+
+conn.Close():
+
+TCP socketni yopadi
+
+va:
+
+resource'larni bo'shatadi
+
+---
+
+# ✅ Scalable Architecture
+
+Scalable Architecture:
+
+ko'p clientlarni handle qila oladigan architecture
+
+Redis:
+
+minglab clientlar
+
+bilan ishlay oladi.
+
+Buning asoslaridan biri:
+
+concurrency
+
+hisoblanadi.
+
+---
+
+# ✅ Worker Pattern
+
+Worker Pattern:
+
+har bir ishni alohida worker bajarishi
+
+Bizning holatda:
+
+har bir client uchun
+alohida goroutine
+
+worker vazifasini bajaradi.
+
+---
+
+# ✅ 4-ETAP Architecture
+
+TCP Server
+    ↓
+Accept Connection
+    ↓
+go handleConnection(conn)
+    ↓
+Worker Goroutine
+    ↓
+Read Commands
+    ↓
+Disconnect
+    ↓
+Cleanup

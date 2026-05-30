@@ -1,0 +1,414 @@
+# Redis Clone — 8-ETAP Nazariyasi
+
+# ✅ Concurrency + Shared Memory Muammosi
+
+Bizda:
+
+Bir nechta client
+↓
+Bir nechta goroutine
+↓
+Bitta storage
+
+bor.
+
+Muammo:
+
+bir nechta goroutine
+bir xil ma'lumot bilan
+bir vaqtda ishlashi
+
+mumkin.
+
+---
+
+# ✅ Shared Memory
+
+Shared Memory:
+
+bir nechta goroutine
+foydalanadigan umumiy xotira
+
+Bizning Redis Clone'da:
+
+var storage = map[string]string{}
+
+shared memory hisoblanadi.
+
+Sababi:
+
+hamma clientlar
+shu storage bilan ishlaydi
+
+---
+
+# ✅ Race Condition
+
+Race Condition:
+
+bir nechta goroutine
+bir xil ma'lumotga
+synchronization'siz murojaat qilishi
+
+natijasida:
+
+kutilmagan natija
+yoki xatolik
+
+kelib chiqadi.
+
+---
+
+# ✅ Nega Race deyiladi?
+
+Sababi:
+
+qaysi goroutine birinchi ishlashi
+aniq emas
+
+Ular go'yo:
+
+poyga qilayotgandek
+
+harakat qiladi.
+
+---
+
+# ✅ Race Condition Misoli
+
+Faraz qil:
+
+counter = 0
+
+---
+
+Goroutine-1:
+
+counter = counter + 1
+
+---
+
+Goroutine-2:
+
+counter = counter + 1
+
+---
+
+Kutgan natija:
+
+counter = 2
+
+---
+
+Lekin ba'zida:
+
+counter = 1
+
+chiqishi mumkin.
+
+Bu Race Condition.
+
+---
+
+# ✅ Go Map Thread-Safe Emas
+
+Go map:
+
+thread-safe emas
+
+Bu degani:
+
+bir nechta goroutine
+bir vaqtda map bilan ishlay olmaydi
+
+---
+
+# ✅ Concurrent Map Writes
+
+Agar:
+
+Goroutine-1
+
+va
+
+Goroutine-2
+
+bir vaqtda:
+
+storage[key] = value
+
+qilsa:
+
+fatal error:
+concurrent map writes
+
+chiqishi mumkin.
+
+---
+
+# ✅ Thread Safe
+
+Thread Safe:
+
+bir nechta goroutine
+bir vaqtda ishlasa ham
+xato bermaydigan kod
+
+---
+
+# ✅ Synchronization
+
+Synchronization:
+
+goroutinelarni
+tartibli ishlatish
+
+Jarayonlarni boshqarish.
+
+Maqsad:
+
+race condition oldini olish
+
+---
+
+# ✅ Critical Section
+
+Critical Section:
+
+umumiy ma'lumotga
+tegadigan kod qismi
+
+Bizda:
+
+storage[key] = value
+
+ham
+
+value := storage[key]
+
+ham Critical Section.
+
+---
+
+# ✅ Mutex
+
+Mutex:
+
+Mutual Exclusion
+
+Ma'nosi:
+
+bir vaqtning o'zida
+faqat bitta goroutinega
+critical sectionga kirishga ruxsat berish
+
+---
+
+# ✅ Mutex Nima Qiladi?
+
+Mutex:
+
+umumiy ma'lumotni
+himoya qiladi
+
+Shu orqali:
+
+race condition
+
+oldi olinadi.
+
+---
+
+# ✅ Lock
+
+Lock:
+
+critical sectionni
+qulflash
+
+degani.
+
+Lock qilingandan keyin:
+
+boshqa goroutinelar
+kutadi
+
+---
+
+# ✅ Unlock
+
+Unlock:
+
+qulfni ochish
+
+degani.
+
+Unlock bo'lgandan keyin:
+
+keyingi goroutine
+kirishi mumkin
+
+---
+
+# ✅ Mutex Ishlash Tartibi
+
+Goroutine-1
+↓
+Lock
+↓
+Storage
+↓
+Unlock
+
+Goroutine-2
+↓
+Kutadi
+↓
+Lock
+↓
+Storage
+↓
+Unlock
+
+---
+
+# ✅ sync.Mutex
+
+Go'da Mutex implementatsiyasi:
+
+sync.Mutex
+
+orqali beriladi.
+
+Bu:
+
+eng oddiy synchronization vositasi
+
+hisoblanadi.
+
+---
+
+# ✅ GET Ham Mutex Ishlatadi
+
+Ko'pchilik:
+
+GET faqat o'qiydi
+
+deb o'ylaydi.
+
+Lekin:
+
+SET yozayotgan paytda
+GET o'qishi
+
+ham muammo tug'dirishi mumkin.
+
+Shuning uchun:
+
+read va write
+himoyalanadi
+
+---
+
+# ✅ Deadlock
+
+Deadlock:
+
+Lock qilinib
+Unlock qilinmasligi
+
+natijasida:
+
+goroutinelar
+kutib qolishi
+
+holati.
+
+---
+
+# ✅ Deadlock Misoli
+
+Lock
+↓
+Error
+↓
+Function tugadi
+↓
+Unlock bo'lmadi
+
+Natija:
+
+hamma goroutine
+kutadi
+
+---
+
+# ✅ Deadlockdan Qochish
+
+Qoida:
+
+har bir Lock uchun
+Unlock bo'lishi shart
+
+---
+
+# ✅ Concurrency Formulasi
+
+Concurrency
+      +
+Shared Memory
+      =
+Synchronization kerak
+
+---
+
+# ✅ Synchronization Vositalari
+
+Go'da:
+
+Mutex
+RWMutex
+Channel
+Atomic
+
+mavjud.
+
+Hozircha:
+
+Mutex
+
+bilan ishlaymiz.
+
+---
+
+# ✅ Redis Clone Architecture (8-ETAP)
+
+Client
+ ↓
+Goroutine
+ ↓
+Storage
+ ↓
+Mutex
+ ↓
+Critical Section
+ ↓
+Unlock
+
+---
+
+# ✅ 8-ETAPda O'rganilganlar
+
+Race Condition
+Shared Memory
+Thread Safe
+Synchronization
+Critical Section
+Mutex
+Lock
+Unlock
+sync.Mutex
+Concurrent Map Writes
+Deadlock
+
+Bu etap Redis Clone'dagi birinchi katta Concurrency va Backend Architecture mavzusi hisoblanadi.

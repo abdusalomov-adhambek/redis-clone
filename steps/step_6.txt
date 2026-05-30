@@ -1,0 +1,324 @@
+# Redis Clone — 6-ETAP Nazariyasi
+
+# ✅ Request
+
+Request:
+
+client yuborgan so'rov
+
+Misollar:
+
+PING
+GET name
+SET name adham
+
+Client serverdan biror ish bajarishni so'raydi.
+
+---
+
+# ✅ Response
+
+Response:
+
+server qaytargan javob
+
+Misollar:
+
+PONG
+adham
+OK
+
+Server requestga javob qaytaradi.
+
+---
+
+# ✅ Request / Response Cycle
+
+Request va Response doim juft bo'ladi.
+
+Flow:
+
+Client
+  ↓
+Request
+  ↓
+Server
+  ↓
+Response
+  ↓
+Client
+
+Bu:
+
+Request/Response Cycle
+
+deyiladi.
+
+---
+
+# ✅ PING Command
+
+PING:
+
+Redisdagi eng oddiy commandlardan biri
+
+Client:
+
+PING
+
+yuboradi.
+
+Server:
+
+PONG
+
+qaytaradi.
+
+---
+
+# ✅ PING Nima Uchun Kerak?
+
+PING:
+
+server ishlayaptimi?
+connection bormi?
+
+shuni tekshiradi.
+
+Monitoring va health-checklarda ko'p ishlatiladi.
+
+---
+
+# ✅ Read
+
+Oldingi etaplarda ishlatganmiz.
+
+Read -> clientdan ma'lumot olish
+
+Misol:
+
+conn.Read()
+
+Vazifasi:
+
+requestni o'qish
+
+---
+
+# ✅ Write
+
+Write:
+
+clientga ma'lumot yuborish
+
+Misol:
+
+conn.Write()
+
+Vazifasi:
+
+response yuborish
+
+---
+
+# ✅ Read vs Write
+
+Read  -> ma'lumot qabul qilish
+
+Write -> ma'lumot yuborish
+
+---
+
+# ✅ Full Duplex
+
+TCP:
+
+full duplex protocol
+
+hisoblanadi.
+
+Ya'ni:
+
+bir vaqtning o'zida
+o'qish ham mumkin
+yozish ham mumkin
+
+---
+
+# ✅ Dispatcher
+
+Dispatcher:
+
+command qaysi handlerga borishini aniqlaydi
+
+Misollar:
+
+PING -> PingHandler
+
+GET -> GetHandler
+
+SET -> SetHandler
+
+Dispatcher:
+
+kim ishlashini tanlaydi
+
+---
+
+# ✅ Handler
+
+Handler:
+
+commandni bajaruvchi kod
+
+Misollar:
+
+PingHandler
+
+SetHandler
+
+GetHandler
+
+Handler:
+
+real ishni bajaradi
+
+---
+
+# ✅ PingHandler
+
+PingHandler:
+
+PING commandini bajaruvchi handler
+
+Flow:
+
+PING
+ ↓
+PingHandler
+ ↓
+PONG
+
+---
+
+# ✅ Command Execution
+
+Command Execution:
+
+commandni bajarish jarayoni
+
+Misol:
+
+PING
+
+↓
+
+PingHandler
+
+↓
+
+PONG
+
+---
+
+# ✅ Response Sending
+
+Response Sending:
+
+response'ni clientga yuborish
+
+Flow:
+
+Handler
+ ↓
+Response
+ ↓
+conn.Write()
+ ↓
+Client
+
+---
+
+# ✅ Nega Dispatcher Kerak?
+
+Hozir faqat:
+
+PING
+
+bor.
+
+Lekin keyin:
+
+SET
+GET
+DEL
+INCR
+
+qo'shiladi.
+
+Dispatcher:
+
+qaysi command qaysi handlerga borishini aniqlaydi
+
+---
+
+# ✅ Nega Handler Kerak?
+
+Agar hamma commandlar bitta joyda yozilsa:
+
+kod juda katta bo'lib ketadi
+
+Shuning uchun:
+
+PingHandler
+
+SetHandler
+
+GetHandler
+
+alohida yoziladi.
+
+Bu:
+
+clean architecture
+
+ga yordam beradi.
+
+---
+
+# ✅ RESP Protocol (Kelajakdagi Etaplar Uchun)
+
+RESP:
+
+Redis Serialization Protocol
+
+Redisning o'z protocoli.
+
+Maqsadi:
+
+client va server
+bir xil formatda gaplashishi
+
+---
+
+# ✅ Redis Command Flow
+
+Client
+  ↓
+Request
+  ↓
+Read
+  ↓
+Parser
+  ↓
+Dispatcher
+  ↓
+Handler
+  ↓
+Response
+  ↓
+Write
+  ↓
+Client
+
+Bu Redis Clone'ning birinchi to'liq request/response pipeline'i hisoblanadi.

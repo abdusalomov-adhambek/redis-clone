@@ -1,0 +1,338 @@
+# Redis Clone — 7-ETAP Nazariyasi
+
+# ✅ Storage
+
+Storage:
+
+ma'lumot saqlanadigan joy
+
+Misollar:
+
+RAM
+SSD
+HDD
+File
+Database
+
+Redis ma'lumotlarni storage ichida saqlaydi.
+
+---
+
+# ✅ In-Memory Database
+
+In-Memory Database:
+
+ma'lumotning asosiy nusxasi
+RAM ichida saqlanadigan database
+
+Misollar:
+
+Redis
+Memcached
+
+---
+
+# ✅ Redis Nega Tez?
+
+Redis:
+
+diskdan emas
+RAM'dan o'qiydi va yozadi
+
+RAM:
+
+juda tez ishlaydi
+
+Shuning uchun Redisning latency'si juda kichik bo'ladi.
+
+---
+
+# ✅ Key-Value Model
+
+Redisning asosiy ma'lumot modeli.
+
+Misol:
+
+name -> adham
+
+age -> 20
+
+city -> tashkent
+
+Bu:
+
+Key -> Value
+
+ko'rinishi deyiladi.
+
+---
+
+# ✅ Key
+
+Key:
+
+ma'lumotni topish uchun identifikator
+
+Misol:
+
+name
+
+---
+
+# ✅ Value
+
+Value:
+
+saqlanayotgan ma'lumot
+
+Misol:
+
+adham
+
+---
+
+# ✅ Hash Map
+
+Hash Map:
+
+key orqali value topuvchi data structure
+
+Misol:
+
+name -> adham
+
+age -> 20
+
+---
+
+# ✅ Nega Hash Map?
+
+Hash Map:
+
+juda tez qidirish imkonini beradi
+
+Shuning uchun Redis Clone storage sifatida map ishlatadi.
+
+---
+
+# ✅ map[string]string
+
+Go'dagi Hash Map.
+
+map[string]string
+
+Ma'nosi:
+
+key   -> string
+
+value -> string
+
+Misol:
+
+"name" -> "adham"
+
+"city" -> "tashkent"
+
+---
+
+# ✅ Global Storage
+
+Global Storage:
+
+hamma clientlar foydalanadigan
+bitta umumiy storage
+
+Misol:
+
+Client-1:
+
+SET name adham
+
+Client-2:
+
+GET name
+
+Client-2 Client-1 yozgan ma'lumotni ko'ra olishi kerak.
+
+Shuning uchun storage umumiy bo'lishi kerak.
+
+---
+
+# ✅ SET Command
+
+SET:
+
+key va value saqlaydi
+
+Misol:
+
+SET name adham
+
+Natija:
+
+name -> adham
+
+---
+
+# ✅ SET Nima Qiladi?
+
+SET:
+
+yangi ma'lumot yaratadi
+yoki eski qiymatni yangilaydi
+
+Misol:
+
+SET age 20
+
+keyin:
+
+SET age 21
+
+Natija:
+
+age -> 21
+
+---
+
+# ✅ GET Command
+
+GET:
+
+key bo'yicha value qaytaradi
+
+Misol:
+
+GET name
+
+Natija:
+
+adham
+
+---
+
+# ✅ CRUD
+
+Database'larning asosiy operatsiyalari.
+
+---
+
+## Create
+
+yangi ma'lumot yaratish
+
+Redis:
+
+SET
+
+---
+
+## Read
+
+ma'lumot o'qish
+
+Redis:
+
+GET
+
+---
+
+## Update
+
+ma'lumotni yangilash
+
+Redis:
+
+SET
+
+(eski qiymat ustiga yozadi)
+
+---
+
+## Delete
+
+ma'lumotni o'chirish
+
+Redis:
+
+DEL
+
+(keyingi etaplarda)
+
+---
+
+# ✅ Storage Architecture
+
+SET oqimi:
+
+Client
+ ↓
+SET name adham
+ ↓
+Parser
+ ↓
+Dispatcher
+ ↓
+SetHandler
+ ↓
+Storage
+
+---
+
+GET oqimi:
+
+Client
+ ↓
+GET name
+ ↓
+Parser
+ ↓
+Dispatcher
+ ↓
+GetHandler
+ ↓
+Storage
+ ↓
+adham
+
+---
+
+# ✅ Kelajakdagi Muammo
+
+Bir nechta goroutine:
+
+bir vaqtda storage bilan ishlaydi
+
+Bu:
+
+Race Condition
+
+muammosiga olib keladi.
+
+Keyingi etaplarda:
+
+Mutex
+
+bilan himoya qilinadi.
+
+---
+
+# ✅ Redis Clone Architecture (7-ETAP)
+
+Client
+ ↓
+TCP
+ ↓
+Read
+ ↓
+Parser
+ ↓
+Dispatcher
+ ↓
+Handler
+ ↓
+Storage (map[string]string)
+ ↓
+Response
+
+Bu etapdan boshlab Redis Clone haqiqiy ma'lumot saqlovchi database bo'la boshlaydi.

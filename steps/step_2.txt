@@ -1,0 +1,195 @@
+# Redis Clone — 2-ETAP Nazariyasi
+
+# ✅ TCP Stream
+
+TCP:
+    message emas byte stream hisoblanadi.
+
+Bu:
+    bytes oqimi degani.
+
+TCP:
+
+* message chegarasini bilmaydi
+* data bo‘laklarga bo‘linib kelishi mumkin
+
+Masalan:
+    SET name adham
+
+quyidagicha kelishi mumkin:
+
+SET na
+me ad
+ham
+
+yoki:
+
+SET name adhamGET age
+
+Shuning uchun protocol va parser juda muhim bo‘ladi.
+
+---
+
+# ✅ Byte
+
+Kompyuter ichida hamma ma’lumot:
+    byte ko‘rinishida ishlaydi.
+
+Misollar:
+
+A -> 65
+B -> 66
+
+
+TCP ham:
+    bytes yuboradi
+
+---
+
+# ✅ Nega networkingda bytes ishlatiladi?
+
+Networking:
+    byte-oriented bo‘ladi.
+
+Sabablari:
+
+* tez ishlaydi
+* universal format
+* binary data yuborish mumkin
+* OS va network layer bytes bilan ishlaydi
+* encoding’dan mustaqil
+
+---
+
+# ✅ Buffer
+
+Buffer:
+    networkdan kelgan bytelarni vaqtinchalik RAM’da saqlovchi joy
+
+Misol:
+    buffer := make([]byte, 1024)
+
+Bu:
+    1024 byte joy ajratish
+
+deyiladi.
+
+---
+
+# ✅ Buffer Size
+
+1024
+
+buffer hajmi.
+
+Bu:
+    buffer size
+
+deyiladi.
+
+Hozircha oddiy random size ishlatilmoqda.
+
+Keyin optimizatsiya qilinadi.
+
+---
+
+# ✅ conn.Read()
+
+n, err := conn.Read(buffer)
+
+Bu:
+    TCP streamdan bytes o‘qish degani.
+
+Muhim:
+
+* Read bytesni qaytarmaydi
+* kelgan bytesni buffer ichiga yozadi
+
+---
+
+# ✅ Blocking Read
+
+`conn.Read()`:
+    blocking operation hisoblanadi.
+
+Agar client hech narsa yubormasa:
+    kod shu joyda kutadi.
+
+---
+
+# ✅ n nima?
+n
+
+Bu:
+    nechta byte kelganini bildiradi
+
+Misol:
+    HELLO
+
+kelsa:
+    n = 5 bo‘ladi.
+
+---
+
+# ✅ buffer[:n]
+
+Buffer:
+    1024 byte bo‘lishi mumkin.
+
+Lekin:
+    kelgan data kichik bo‘ladi.
+
+Misol:
+    HELLO -> 5 byte.
+
+Qolgan joy:
+    bo‘sh qoladi.
+
+Shuning uchun:
+    buffer[:n] qilinadi.
+
+Bu:
+    faqat valid data qismini olish
+
+degani.
+
+---
+
+# ✅ Byte → String
+
+TCP:
+    bytes beradi.
+
+Inson o‘qishi uchun:
+    string(buffer[:n]) qilinadi.
+
+Bu:
+    bytesni textga aylantirish  degani.
+
+---
+
+# ✅ TCP Message Boundary Muammosi
+
+TCP:
+    message chegarasini bilmaydi
+
+Shuning uchun:
+
+* bitta message bo‘linib kelishi mumkin
+* bir nechta message qo‘shilib kelishi mumkin
+
+Bu keyinchalik:
+
+* RESP protocol
+* parser
+* delimiter
+
+nega kerakligini tushuntiradi.
+
+---
+
+# ✅ Networking Mindset
+
+Backend engineer networkingni:
+    stringlar emas, byte stream sifatida o‘ylaydi.
+Bu juda muhim fundamental tushuncha.

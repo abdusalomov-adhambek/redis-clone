@@ -1,0 +1,283 @@
+# Redis Clone — 5-ETAP Nazariyasi
+
+# ✅ Parser
+
+Parser:
+
+raw textni structured data ga aylantiruvchi qism
+
+Vazifasi:
+
+* commandni aniqlash
+* argumentlarni ajratish
+* ma'lumotni qayta ishlashga tayyorlash
+
+Misol:
+
+SET name adham
+
+↓
+
+Command = SET
+Args = [name, adham]
+
+---
+
+# ✅ Parsing
+
+Parsing:
+
+raw textni ma'noli qismlarga ajratish jarayoni
+
+Misol:
+
+SET name adham
+
+↓
+
+SET
+name
+adham
+
+---
+
+# ✅ Raw Data
+
+Raw Data:
+
+hali ishlov berilmagan ma'lumot
+
+Misol:
+
+SET name adham
+
+Bu hali oddiy string.
+
+---
+
+# ✅ Structured Data
+
+Structured Data:
+
+qismlarga ajratilgan va tushunarli ma'lumot
+
+Misol:
+
+Command = SET
+Args = [name, adham]
+
+---
+
+# ✅ Command
+
+Command:
+
+server bajarishi kerak bo'lgan buyruq
+
+Misollar:
+
+SET
+GET
+DEL
+PING
+INCR
+
+Savol:
+
+nima qilish kerak?
+
+---
+
+# ✅ Argument
+
+Argument:
+
+command uchun berilgan qo'shimcha ma'lumot
+
+Savol:
+
+qaysi ma'lumot bilan ishlash kerak?
+
+Misol:
+
+SET name adham
+
+Bu yerda:
+
+SET   -> Command
+name  -> Argument
+adham -> Argument
+
+---
+
+# ✅ Token
+
+Token:
+
+parser ajratgan bitta ma'noli bo'lak
+
+Misol:
+
+SET name adham
+
+Tokenlar:
+
+SET
+name
+adham
+
+---
+
+# ✅ Tokenization
+
+Tokenization:
+
+textni tokenlarga ajratish jarayoni
+
+Misol:
+
+SET name adham
+
+↓
+
+["SET", "name", "adham"]
+
+---
+
+# ✅ Validation
+
+Validation:
+
+kelgan ma'lumot qoidalarga mosligini tekshirish
+
+To'g'ri:
+
+SET name adham
+
+Noto'g'ri:
+
+SET
+
+Sababi:
+
+key va value yo'q
+
+---
+
+# ✅ Command Dispatching
+
+Dispatching:
+
+qaysi command qaysi handlerga borishini aniqlash
+
+Misol:
+
+SET -> SetHandler
+
+GET -> GetHandler
+
+PING -> PingHandler
+
+Dispatcher:
+
+kim ishlashini tanlaydi
+
+---
+
+# ✅ Dispatcher
+
+Dispatcher:
+
+commandni mos handlerga yuboruvchi qism
+
+Vazifasi:
+
+command nomiga qarab
+kerakli handlerni topish
+
+---
+
+# ✅ Handler
+
+Handler:
+
+commandni bajaruvchi kod
+
+Misollar:
+
+SetHandler
+GetHandler
+PingHandler
+DelHandler
+
+Vazifasi:
+
+real ishni bajarish
+
+---
+
+# ✅ Nega Slice Ishlatiladi?
+
+Commandlar turlicha argument oladi.
+
+Misollar:
+
+PING
+
+1 ta token.
+
+GET name
+
+2 ta token.
+
+SET name adham
+
+3 ta token.
+
+Shuning uchun:
+
+slice
+
+ishlatiladi.
+
+---
+
+# ✅ Redis Command Flow
+
+Redis ichidagi command oqimi:
+
+Client
+  ↓
+TCP
+  ↓
+Read
+  ↓
+Parser
+  ↓
+Tokens
+  ↓
+Validation
+  ↓
+Dispatcher
+  ↓
+Handler
+  ↓
+Response
+
+---
+
+# ✅ Parser Architecture
+
+Raw Text
+   ↓
+Parser
+   ↓
+Tokenization
+   ↓
+Validation
+   ↓
+Dispatcher
+   ↓
+Handler
+
+Bu Redis command processing pipeline'ining asosiy ko'rinishi hisoblanadi.
