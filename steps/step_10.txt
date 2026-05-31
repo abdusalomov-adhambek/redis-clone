@@ -1,0 +1,391 @@
+# Redis Clone — 10-ETAP Nazariyasi
+
+# ✅ Persistence
+
+Persistence:
+
+ma'lumotni diskda saqlash jarayoni
+
+Maqsadi:
+
+Server restart bo'lsa ham
+ma'lumot saqlanib qolishi
+
+---
+
+# ✅ Volatile Memory
+
+Volatile Memory:
+
+tok o'chsa
+yoki process tugasa
+ma'lumot yo'qoladigan xotira
+
+Misol:
+
+RAM
+
+---
+
+# ✅ Non-Volatile Memory
+
+Non-Volatile Memory:
+
+tok o'chsa ham
+ma'lumot saqlanib qoladigan xotira
+
+Misollar:
+
+SSD
+HDD
+Disk
+
+---
+
+# ✅ Nega RAM Dagı Data Yo'qoladi?
+
+RAM:
+
+volatile memory
+
+hisoblanadi.
+
+Shuning uchun:
+
+Server stop
+↓
+Process tugaydi
+↓
+Data yo'qoladi
+
+---
+
+# ✅ RDB (Redis Database Snapshot)
+
+RDB:
+
+ma'lum vaqtda
+butun database nusxasini olish
+
+jarayoni.
+
+Misol:
+
+Har 5 minut
+↓
+Snapshot
+↓
+dump.rdb
+
+---
+
+# ✅ Snapshot
+
+Snapshot:
+
+database ning
+ma'lum vaqtdagi rasmi
+
+Misol:
+
+Storage
+13:00
+↓
+snapshot
+
+---
+
+# ✅ RDB Afzalliklari
+
+tez ishlaydi
+
+kichik fayl hosil qiladi
+
+backup olish oson
+
+---
+
+# ✅ RDB Kamchiliklari
+
+oxirgi o'zgarishlar
+yo'qolishi mumkin
+
+Misol:
+
+13:00 snapshot
+
+13:04 crash
+
+13:00 dan keyingi data yo'qoladi.
+
+---
+
+# ✅ AOF (Append Only File)
+
+AOF:
+
+har bir commandni
+faylga yozib borish
+
+jarayoni.
+
+Misol:
+
+SET name Adham
+SET age 20
+DEL age
+
+---
+
+# ✅ AOF Afzalliklari
+
+kamroq data yo'qoladi
+
+database aniq tiklanadi
+
+---
+
+# ✅ AOF Kamchiliklari
+
+fayl kattalashadi
+
+RDB ga qaraganda sekinroq
+
+---
+
+# ✅ Serialization
+
+Serialization:
+
+Go objectni
+file formatga aylantirish
+
+Misol:
+
+map[string]string
+
+↓
+
+{
+  "name":"Adham"
+}
+
+---
+
+# ✅ Deserialization
+
+Deserialization:
+
+file formatni
+Go objectga aylantirish
+
+Misol:
+
+{
+  "name":"Adham"
+}
+
+↓
+
+map[string]string
+
+---
+
+# ✅ JSON
+
+JSON:
+
+JavaScript Object Notation
+
+Ma'lumot saqlash uchun ishlatiladigan text format.
+
+Misol:
+
+{
+  "name":"Adham",
+  "city":"Tashkent"
+}
+
+---
+
+# ✅ Marshal
+
+Marshal:
+
+Go object
+↓
+JSON
+
+aylantirish jarayoni.
+
+Misol:
+
+storage
+
+↓
+
+{
+  "name":"Adham"
+}
+
+---
+
+# ✅ Unmarshal
+
+Unmarshal:
+
+JSON
+↓
+Go object
+
+aylantirish jarayoni.
+
+Misol:
+
+{
+  "name":"Adham"
+}
+
+↓
+
+storage
+
+---
+
+# ✅ Save
+
+Save:
+
+RAM dagi ma'lumotni
+diskka yozish
+
+Flow:
+
+Storage
+↓
+Marshal
+↓
+Write File
+↓
+data.json
+
+---
+
+# ✅ Load
+
+Load:
+
+diskdagi ma'lumotni
+RAM ga yuklash
+
+Flow:
+
+data.json
+↓
+Read File
+↓
+Unmarshal
+↓
+Storage
+
+---
+
+# ✅ Recovery
+
+Recovery:
+
+server qayta ishga tushganda
+ma'lumotni tiklash
+
+jarayoni.
+
+---
+
+# ✅ Startup Recovery
+
+Server start:
+
+main()
+ ↓
+load()
+ ↓
+Read File
+ ↓
+Unmarshal
+ ↓
+Storage
+
+Natijada:
+
+oldingi data
+qayta tiklanadi
+
+---
+
+# ✅ Persistence Strategy
+
+Bizning Redis Clone'da:
+
+SET
+ ↓
+Storage
+ ↓
+Save()
+ ↓
+data.json
+
+bo'ladi.
+
+---
+
+Server restart:
+
+Server Start
+ ↓
+Load()
+ ↓
+Storage Restore
+
+---
+
+# ✅ Persistence Architecture
+
+SET
+ ↓
+Storage
+ ↓
+Marshal
+ ↓
+data.json
+
+---
+
+Server Restart
+ ↓
+Load
+ ↓
+Unmarshal
+ ↓
+Storage
+
+---
+
+# ✅ 10-ETAPda O'rganilganlar
+
+Persistence
+Volatile Memory
+Non-Volatile Memory
+RDB
+Snapshot
+AOF
+Serialization
+Deserialization
+JSON
+Marshal
+Unmarshal
+Save
+Load
+Recovery
+Startup Recovery
+
+Bu etapdan boshlab Redis Clone restart bo'lgandan keyin ham ma'lumotlarni saqlab qoladigan database tomon rivojlanadi.

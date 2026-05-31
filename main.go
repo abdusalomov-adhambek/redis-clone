@@ -2,17 +2,19 @@ package main
 
 import (
 	"fmt"
-	"goredisclone/handlers"
-	"goredisclone/variables"
-	"io"
+	"goredisclone/helpers"
+	"goredisclone/persistence"
 	"log"
 	"net"
-	"strings"
-	"time"
 )
 
 func main() {
 	port := ":8001"
+
+	// Start persistence load in the background
+	persistence.Load()
+
+	// Start TCP listener on the given port
 	listener, err := net.Listen("tcp", port)
 	if err != nil {
 		panic(err)
@@ -20,9 +22,10 @@ func main() {
 
 	log.Println("Redis clone connectect port", port)
 
-	// cleanup worker for expired keys
-	go cleanupWorker()
+	// Start background worker to clean up expired keys
+	go helpers.CleanupWorker()
 
+	// Accept incoming client connections in a loop
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
@@ -32,74 +35,7 @@ func main() {
 
 		fmt.Println("new client connected:", conn.LocalAddr())
 
-		// handle client connection
-		go handleConnection(conn)
-
-	}
-}
-
-func handleConnection(conn net.Conn) {
-	fmt.Println("new client connection: ", conn.RemoteAddr())
-
-	defer conn.Close()
-
-	for {
-		buffer := make([]byte, 1024)
-
-		n, err := conn.Read(buffer)
-		if err != nil {
-			if err == io.EOF {
-				fmt.Println("client disconnected")
-			} else {
-				fmt.Println("read error:", err)
-			}
-			conn.Close()
-			break
-		}
-
-		message := string(buffer[:n])
-		command, args := parseCommand(message)
-		dispatch(conn, command, args)
-	}
-}
-
-func parseCommand(message string) (string, []string) {
-	tokens := strings.Fields(message)
-
-	if len(tokens) == 0 {
-		return "", nil
-	}
-
-	command := strings.ToUpper(tokens[0])
-	args := tokens[1:]
-
-	return command, args
-}
-
-func dispatch(conn net.Conn, command string, args []string) {
-	switch command {
-	case "PING":
-		handlers.PingHandler(conn)
-	case "SET":
-		handlers.SetHanlder(conn, args)
-	case "GET":
-		handlers.GetHandler(conn, args)
-	default:
-		conn.Write([]byte("Unknown command\r\n"))
-	}
-}
-
-func cleanupWorker() {
-	for {
-		time.Sleep(5 * time.Second)
-
-		variables.Mu.Lock()
-		for key, timeEx := range variables.Expirations {
-			if time.Now().After(timeEx) {
-				delete(variables.Expirations, key)
-				delete(variables.Storage, key)
-			}
-		}
-		variables.Mu.Unlock()
+		// Handle each client connection in a separate goroutine
+		go helpers.HandleConnection(conn)
 	}
 }
