@@ -1,0 +1,423 @@
+# Redis Clone — 11-ETAP Nazariyasi
+
+# Protocol
+
+Protocol:
+
+ikki tizim orasidagi
+aloqa qoidalari
+
+Misollar:
+
+HTTP
+HTTPS
+TCP
+WebSocket
+RESP
+
+---
+
+# RESP (Redis Serialization Protocol)
+
+RESP:
+
+Redis Serialization Protocol
+
+Redis client va Redis server orasidagi aloqa protokoli.
+
+---
+
+# Nega RESP Kerak?
+
+RESP:
+
+ma'lumotlarni
+aniq va ishonchli parse qilish
+
+uchun kerak.
+
+Oddiy text parser:
+
+SET bio I love Golang
+
+kabi holatlarda adashishi mumkin.
+
+RESP esa:
+
+har bir qiymat uzunligini
+ham yuboradi
+
+---
+
+# RESP Types
+
+Asosiy RESP turlari:
+
+Simple String
+Bulk String
+Array
+Integer
+Error
+Null
+
+---
+
+# RESP Array
+
+RESP Array:
+
+*<count>
+
+ko'rinishida bo'ladi.
+
+Misol:
+
+*3
+
+Ma'nosi:
+
+3 ta element keladi
+
+---
+
+# Array Misoli
+
+*3
+$3
+SET
+$4
+name
+$5
+adham
+
+Bu:
+
+SET
+name
+adham
+
+degan commandni bildiradi.
+
+---
+
+# Bulk String
+
+Bulk String:
+
+$<length>
+
+ko'rinishida bo'ladi.
+
+Misol:
+
+$4
+PING
+
+Bu:
+
+uzunligi 4 byte
+bo'lgan string
+
+degani.
+
+---
+
+# Nega Length Yuboriladi?
+
+Length:
+
+string nechta byte ekanini
+aniq bilish
+
+uchun yuboriladi.
+
+Misol:
+
+hello world
+
+RESP:
+
+$11
+hello world
+
+Parser:
+
+aniq 11 byte o'qiydi
+
+---
+
+# PING Request Misoli
+
+Client:
+
+*1
+$4
+PING
+
+---
+
+Tahlil:
+
+*1
+↓
+1 ta element
+
+$4
+↓
+4 byte
+
+PING
+
+---
+
+# SET Request Misoli
+
+*3
+$3
+SET
+$4
+name
+$5
+adham
+
+---
+
+Parser natijasi:
+
+SET
+name
+adham
+
+---
+
+# Simple String
+
+Simple String:
+
++<message>
+
+ko'rinishida bo'ladi.
+
+Misollar:
+
++OK
+
++PONG
+
+---
+
+# Error Response
+
+Error:
+
+-ERR message
+
+ko'rinishida bo'ladi.
+
+Misol:
+
+-ERR wrong number of arguments
+
+---
+
+# Integer Response
+
+Integer:
+
+:<number>
+
+ko'rinishida bo'ladi.
+
+Misol:
+
+:100
+
+---
+
+# Bulk String Response
+
+GET command javobi.
+
+Misol:
+
+GET name
+
+---
+
+Natija:
+
+$5
+adham
+
+---
+
+# Null Response
+
+Agar key topilmasa:
+
+$-1
+
+qaytariladi.
+
+---
+
+# RESP Parser
+
+RESP Parser:
+
+RESP requestni
+Go arrayga aylantiradi
+
+Misol:
+
+Input:
+
+*3
+$3
+SET
+$4
+name
+$5
+adham
+
+Output:
+
+[]string{
+	"SET",
+	"name",
+	"adham",
+}
+
+---
+
+# RESP Encoder
+
+RESP Encoder:
+
+server javoblarini
+RESP formatga o'tkazadi
+
+Misol:
+
+OK
+
+↓
+
++OK\r\n
+
+---
+
+# CRLF
+
+RESP standartida:
+
+\r\n
+
+ishlatiladi.
+
+Bu:
+
+Carriage Return
+Line Feed
+
+degani.
+
+RESP'dagi har bir qator:
+
+\r\n
+
+bilan tugaydi.
+
+---
+
+# Byte-Level Parsing
+
+Oldingi parser:
+
+strings.Fields()
+
+asosida ishlaydi.
+
+RESP Parser esa:
+
+byte darajasida ishlaydi
+
+Misol:
+
+*3
+$3
+SET
+$4
+name
+$5
+adham
+
+baytma-bayt o'qiladi.
+
+---
+
+# RESP Architecture
+
+Oldingi:
+
+TCP
+ ↓
+Read
+ ↓
+Fields()
+ ↓
+Parser
+
+---
+
+Yangi:
+
+TCP
+ ↓
+RESP Parser
+ ↓
+[]string
+ ↓
+Dispatcher
+ ↓
+Handler
+ ↓
+RESP Encoder
+ ↓
+Client
+
+---
+
+# RESPning Asosiy Afzalliklari
+
+Aniq parsing
+
+Bo'shliqlar bilan ishlay oladi
+
+Redis clientlari bilan mos ishlaydi
+
+redis-cli ulanishiga yaqinlashadi
+
+Standart Redis protokoli hisoblanadi
+
+---
+
+# 11-ETAPda O'rganilganlar
+
+Protocol
+RESP
+RESP Types
+Array
+Bulk String
+Simple String
+Error Response
+Integer Response
+Null Response
+Length Prefix
+RESP Parser
+RESP Encoder
+CRLF
+Byte-Level Parsing
+RESP Architecture
+
+Bu etap Redis Clone'ni oddiy text parserdan haqiqiy Redis Protocol ishlatadigan serverga aylantirishning asosiy bosqichi hisoblanadi.

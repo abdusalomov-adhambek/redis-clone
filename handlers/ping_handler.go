@@ -1,9 +1,14 @@
+// Package handlers contains one handler function per Redis command.
+// Each handler receives the client connection and the parsed argument list,
+// writes the appropriate RESP response back to the client, and returns.
 package handlers
 
-import "net"
+import (
+	"net"
+)
 
 // PingHandler handles the PING command.
-// It responds with "PONG" to confirm the server is alive.
+// Responds with the RESP simple-string "+PONG" to confirm the server is alive.
 func PingHandler(conn net.Conn) {
-	conn.Write([]byte("PONG\r\n"))
+	conn.Write([]byte("+PONG\r\n"))
 }

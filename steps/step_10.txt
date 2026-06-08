@@ -1,6 +1,6 @@
 # Redis Clone — 10-ETAP Nazariyasi
 
-# ✅ Persistence
+# Persistence
 
 Persistence:
 
@@ -13,7 +13,7 @@ ma'lumot saqlanib qolishi
 
 ---
 
-# ✅ Volatile Memory
+# Volatile Memory
 
 Volatile Memory:
 
@@ -27,7 +27,7 @@ RAM
 
 ---
 
-# ✅ Non-Volatile Memory
+# Non-Volatile Memory
 
 Non-Volatile Memory:
 
@@ -42,7 +42,7 @@ Disk
 
 ---
 
-# ✅ Nega RAM Dagı Data Yo'qoladi?
+# Nega RAM Dagı Data Yo'qoladi?
 
 RAM:
 
@@ -60,7 +60,7 @@ Data yo'qoladi
 
 ---
 
-# ✅ RDB (Redis Database Snapshot)
+# RDB (Redis Database Snapshot)
 
 RDB:
 
@@ -79,7 +79,7 @@ dump.rdb
 
 ---
 
-# ✅ Snapshot
+# Snapshot
 
 Snapshot:
 
@@ -95,7 +95,7 @@ snapshot
 
 ---
 
-# ✅ RDB Afzalliklari
+# RDB Afzalliklari
 
 tez ishlaydi
 
@@ -105,7 +105,7 @@ backup olish oson
 
 ---
 
-# ✅ RDB Kamchiliklari
+# RDB Kamchiliklari
 
 oxirgi o'zgarishlar
 yo'qolishi mumkin
@@ -120,7 +120,7 @@ Misol:
 
 ---
 
-# ✅ AOF (Append Only File)
+# AOF (Append Only File)
 
 AOF:
 
@@ -137,7 +137,7 @@ DEL age
 
 ---
 
-# ✅ AOF Afzalliklari
+# AOF Afzalliklari
 
 kamroq data yo'qoladi
 
@@ -145,7 +145,7 @@ database aniq tiklanadi
 
 ---
 
-# ✅ AOF Kamchiliklari
+# AOF Kamchiliklari
 
 fayl kattalashadi
 
@@ -153,7 +153,7 @@ RDB ga qaraganda sekinroq
 
 ---
 
-# ✅ Serialization
+# Serialization
 
 Serialization:
 
@@ -172,7 +172,7 @@ map[string]string
 
 ---
 
-# ✅ Deserialization
+# Deserialization
 
 Deserialization:
 
@@ -191,7 +191,7 @@ map[string]string
 
 ---
 
-# ✅ JSON
+# JSON
 
 JSON:
 
@@ -208,7 +208,7 @@ Misol:
 
 ---
 
-# ✅ Marshal
+# Marshal
 
 Marshal:
 
@@ -230,7 +230,7 @@ storage
 
 ---
 
-# ✅ Unmarshal
+# Unmarshal
 
 Unmarshal:
 
@@ -252,7 +252,7 @@ storage
 
 ---
 
-# ✅ Save
+# Save
 
 Save:
 
@@ -271,7 +271,7 @@ data.json
 
 ---
 
-# ✅ Load
+# Load
 
 Load:
 
@@ -290,7 +290,7 @@ Storage
 
 ---
 
-# ✅ Recovery
+# Recovery
 
 Recovery:
 
@@ -301,7 +301,7 @@ jarayoni.
 
 ---
 
-# ✅ Startup Recovery
+# Startup Recovery
 
 Server start:
 
@@ -322,7 +322,7 @@ qayta tiklanadi
 
 ---
 
-# ✅ Persistence Strategy
+# Persistence Strategy
 
 Bizning Redis Clone'da:
 
@@ -348,7 +348,7 @@ Storage Restore
 
 ---
 
-# ✅ Persistence Architecture
+# Persistence Architecture
 
 SET
  ↓
@@ -370,7 +370,7 @@ Storage
 
 ---
 
-# ✅ 10-ETAPda O'rganilganlar
+# 10-ETAPda O'rganilganlar
 
 Persistence
 Volatile Memory

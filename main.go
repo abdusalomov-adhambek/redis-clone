@@ -1,3 +1,4 @@
+// Package main is the entry point of the Redis clone TCP server.
 package main
 
 import (
@@ -8,6 +9,10 @@ import (
 	"net"
 )
 
+// main initializes the server by loading persisted data from disk, starting
+// the TCP listener on the configured port, launching a background goroutine
+// that periodically removes expired keys, and then entering an accept loop
+// that spawns a new goroutine for every incoming client connection.
 func main() {
 	port := ":8001"
 

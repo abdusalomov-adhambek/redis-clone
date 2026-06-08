@@ -15,7 +15,7 @@ import (
 func SetHanlder(conn net.Conn, args []string) {
 	// Ensure at least two arguments (key and value) are provided
 	if len(args) < 2 {
-		conn.Write([]byte("ERR wrong number of arguments \n"))
+		conn.Write([]byte("-ERR wrong number of arguments\r\n"))
 		return
 	}
 
@@ -30,7 +30,7 @@ func SetHanlder(conn net.Conn, args []string) {
 		if strings.ToUpper(args[2]) == "EX" {
 			ttl, err := strconv.Atoi(args[3])
 			if err != nil {
-				conn.Write([]byte("ERR invalid TTL \n"))
+				conn.Write([]byte("-ERR invalid TTL\r\n"))
 				variables.Mu.Unlock()
 				return
 			}
@@ -46,5 +46,5 @@ func SetHanlder(conn net.Conn, args []string) {
 
 	persistence.Save()
 
-	conn.Write([]byte("OK\n"))
+	conn.Write([]byte("+OK\r\n"))
 }

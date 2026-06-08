@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"goredisclone/variables"
 	"net"
 	"time"
@@ -12,7 +13,7 @@ import (
 func GetHandler(conn net.Conn, args []string) {
 	// Ensure at least one argument (key) is provided
 	if len(args) < 1 {
-		conn.Write([]byte("ERR wrong number of arguments\n"))
+		conn.Write([]byte("-ERR wrong number of arguments\r\n"))
 		return
 	}
 
@@ -25,18 +26,19 @@ func GetHandler(conn net.Conn, args []string) {
 	// Check if the key exists in storage
 	value, exists := variables.Storage[key]
 	if !exists {
-		conn.Write([]byte("NULL\n"))
+		conn.Write([]byte("$-1\r\n"))
 		return
 	}
 
 	// Check if the key has an expiration and whether it has expired
 	expireAt, exists := variables.Expirations[key]
 	if exists && time.Now().After(expireAt) {
-		conn.Write([]byte("NULL\n"))
+		conn.Write([]byte("$-1\r\n"))
 		delete(variables.Storage, key)
 		delete(variables.Expirations, key)
 		return
 	}
 
-	conn.Write([]byte(value + "\n"))
+	fmt.Fprintf(conn, "$%d\r\n%s\r\n", len(value), value)
+
 }
