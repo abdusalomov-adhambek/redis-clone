@@ -1,1 +1,8 @@
-{"storage":{"\"\"":"adhambek","age":"21","city":"tashkent","message:1111":"salom","name":"Adhambek"},"expirations":{}}
+{
+  "storage": {
+    "age": "21",
+    "city": "tashkent",
+    "message:1111": "salom"
+  },
+  "expirations": {}
+}

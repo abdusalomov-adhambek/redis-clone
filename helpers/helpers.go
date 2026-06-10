@@ -86,6 +86,8 @@ func Dispatch(conn net.Conn, command string, args []string) {
 		handlers.SetHanlder(conn, args)
 	case "GET":
 		handlers.GetHandler(conn, args)
+	case "DEL":
+		handlers.DelHandler(conn, args)
 	default:
 		conn.Write([]byte("-ERR unknown command\r\n"))
 	}

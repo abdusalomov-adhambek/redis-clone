@@ -1,0 +1,457 @@
+# Redis Clone — 12-ETAP Nazariyasi
+
+# DEL Command
+
+DEL:
+
+Redis'dagi keyni o'chirish
+
+uchun ishlatiladi.
+
+Misol:
+
+DEL name
+
+---
+
+# DEL Maqsadi
+
+Storage ichidagi ma'lumotni:
+
+qo'lda o'chirish
+
+imkoniyatini beradi.
+
+---
+
+# DEL Misoli
+
+SET name Adham
+
+↓
+
+GET name
+
+↓
+
+Adham
+
+---
+
+Keyin:
+
+DEL name
+
+↓
+
+GET name
+
+↓
+
+NULL
+
+---
+
+# Expiration va DEL Farqi
+
+### Expiration
+
+TTL tugaganda
+avtomatik o'chadi
+
+---
+
+### DEL
+
+foydalanuvchi
+qo'lda o'chiradi
+
+---
+
+# Manual Deletion
+
+Manual Deletion:
+
+foydalanuvchi tomonidan
+qo'lda o'chirish
+
+jarayoni.
+
+DEL command bunga misol bo'ladi.
+
+---
+
+# Storage Delete
+
+DEL ishlaganda:
+
+delete(storage, key)
+
+bajariladi.
+
+Natija:
+
+key va value
+storage'dan o'chadi
+
+---
+
+# Expiration Delete
+
+Agar key uchun TTL mavjud bo'lsa:
+
+delete(expirations, key)
+
+ham bajarilishi kerak.
+
+---
+
+# Nega Expiration Ham O'chiriladi?
+
+Faraz qil:
+
+Storage:
+name -> Adham
+
+---
+
+Expirations:
+name -> expireAt
+
+---
+
+Agar faqat storage'dan o'chirilsa:
+
+Storage:
+empty
+
+---
+
+Expirations:
+name -> expireAt
+
+qolib ketadi.
+
+---
+
+Natija:
+
+storage va expirations
+bir-biriga mos kelmay qoladi
+
+---
+
+# Consistency
+
+Consistency:
+
+bog'langan ma'lumotlar
+bir xil holatda bo'lishi
+
+demakdir.
+
+Bizda:
+
+Storage
++
+Expirations
+
+har doim mos bo'lishi kerak.
+
+---
+
+# Redis Response
+
+Redis DEL commandida:
+
+Integer Response
+
+qaytaradi.
+
+---
+
+# Integer Response
+
+Integer Response:
+
+:<number>
+
+ko'rinishida bo'ladi.
+
+Misol:
+
+:1
+
+yoki
+
+:0
+
+---
+
+# Nega Integer Response Qaytariladi?
+
+Redis:
+
+nechta key
+o'chirilganini
+
+qaytaradi.
+
+---
+
+Misol:
+
+DEL name
+
+↓
+
+1
+
+---
+
+Misol:
+
+DEL unknown
+
+↓
+
+0
+
+---
+
+# Success Delete
+
+Agar key mavjud bo'lsa:
+
+delete muvaffaqiyatli
+
+bo'ladi.
+
+Redis:
+
+1
+
+qaytaradi.
+
+---
+
+# Failed Delete
+
+Agar key mavjud bo'lmasa:
+
+delete bajarilmaydi
+
+---
+
+Redis:
+
+0
+
+qaytaradi.
+
+---
+
+# Mutex
+
+DEL ham:
+
+shared memory
+
+bilan ishlaydi.
+
+---
+
+Chunki:
+
+SET
+GET
+DEL
+Cleanup Worker
+
+hammasi:
+
+Storage
+Expirations
+
+ga murojaat qiladi.
+
+---
+
+# Race Condition
+
+Mutex bo'lmasa:
+
+bir goroutine delete qiladi
+
+ikkinchisi o'qiydi
+
+uchinchisi yozadi
+
+---
+
+Natija:
+
+Race Condition
+
+---
+
+# Lock va Unlock
+
+DEL ishlaganda:
+
+Lock
+ ↓
+Delete
+ ↓
+Unlock
+
+bo'lishi kerak.
+
+---
+
+# Persistence
+
+DEL faqat RAM'dan o'chirsa yetarli emas.
+
+---
+
+Faraz qil:
+
+SET name Adham
+
+↓
+
+data.json
+
+ga yozildi.
+
+---
+
+Keyin:
+
+DEL name
+
+qildik.
+
+---
+
+Agar:
+
+Save()
+
+chaqirilmasa:
+
+RAM:
+name yo'q
+
+---
+
+Disk:
+name bor
+
+---
+
+Server restart:
+
+Load()
+
+↓
+
+name qaytib keladi
+
+---
+
+# Persistence Update
+
+Shuning uchun:
+
+DEL
+ ↓
+Delete
+ ↓
+Save()
+
+bo'lishi kerak.
+
+---
+
+# Validation
+
+Noto'g'ri:
+
+DEL
+
+---
+
+To'g'ri:
+
+DEL name
+
+---
+
+# Delete Flow
+
+Client
+ ↓
+DEL name
+ ↓
+Dispatcher
+ ↓
+DelHandler
+ ↓
+Lock
+ ↓
+Delete Storage
+ ↓
+Delete Expiration
+ ↓
+Save()
+ ↓
+Unlock
+ ↓
+Response
+
+---
+
+# CRUD
+
+CRUD:
+
+Create
+Read
+Update
+Delete
+
+operatsiyalari.
+
+---
+
+Bizning Clone'da:
+
+SET = Create
+
+GET = Read
+
+SET = Update
+
+DEL = Delete
+
+---
+
+# 12-ETAPda O'rganilganlar
+
+DEL Command
+Manual Deletion
+Storage Delete
+Expiration Delete
+Consistency
+Integer Response
+Success Delete
+Failed Delete
+Mutex
+Race Condition
+Persistence Update
+Delete Flow
+CRUD
+
+Bu etap Redis Clone'da ma'lumotlarni qo'lda boshqarish va CRUD operatsiyalarini to'liq qilish uchun xizmat qiladi.

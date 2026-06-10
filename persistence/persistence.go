@@ -26,6 +26,7 @@ func Save() {
 	// Marshal the snapshot to JSON bytes.
 	data, err := json.Marshal(db)
 	if err != nil {
+		variables.Mu.Unlock()
 		log.Println("database.json marshal error: ", err)
 		return
 	}
@@ -41,7 +42,6 @@ func Save() {
 // accepting connections. If the file does not exist the server starts with
 // an empty dataset, which is the normal first-run behaviour.
 func Load() {
-
 	var db variables.DB
 
 	// Read the raw JSON bytes from disk.
