@@ -1,0 +1,347 @@
+# Redis Clone — 14-ETAP Nazariyasi
+
+# EXISTS Command
+
+EXISTS:
+
+key mavjudligini tekshiradi
+
+commandi hisoblanadi.
+
+---
+
+# EXISTS Maqsadi
+
+EXISTS yordamida:
+
+key bormi yoki yo'qmi
+
+tekshiriladi.
+
+---
+
+# EXISTS Misoli
+
+SET name Adham
+
+↓
+
+EXISTS name
+
+↓
+
+1
+
+---
+
+# Key Topilmasa
+
+EXISTS unknown
+
+↓
+
+0
+
+---
+
+# Integer Response
+
+EXISTS:
+
+Integer Response
+
+qaytaradi.
+
+---
+
+# 1 Nimani Bildiradi?
+
+key mavjud
+
+degan ma'noni bildiradi.
+
+---
+
+Misol:
+
+Storage:
+name -> Adham
+
+---
+
+EXISTS name
+
+↓
+
+1
+
+---
+
+# 0 Nimani Bildiradi?
+
+key topilmadi
+
+degan ma'noni bildiradi.
+
+---
+
+Misol:
+
+EXISTS age
+
+↓
+
+0
+
+---
+
+# GET va EXISTS Farqi
+
+### GET
+
+GET name
+
+↓
+
+Adham
+
+---
+
+GET:
+
+value qaytaradi
+
+---
+
+### EXISTS
+
+EXISTS name
+
+↓
+
+1
+
+---
+
+EXISTS:
+
+faqat mavjudligini tekshiradi
+
+---
+
+# Key Existence Check
+
+Key Existence Check:
+
+key bor yoki yo'qligini
+aniqlash
+
+jarayoni.
+
+---
+
+Go'da:
+
+_, exists := Storage[key]
+
+---
+
+# TTL bilan Bog'liq Holat
+
+Faraz qil:
+
+SET token abc
+EXPIRE token 10
+
+---
+
+11 soniyadan keyin:
+
+EXISTS token
+
+↓
+
+0
+
+---
+
+# Nega 0 Qaytaradi?
+
+Chunki:
+
+TTL tugagan
+
+---
+
+Demak:
+
+key mavjud emas
+
+deb hisoblanadi.
+
+---
+
+# Expired Key
+
+Expired Key:
+
+vaqti tugagan key
+
+degan ma'noni bildiradi.
+
+---
+
+# Lazy Expiration
+
+Agar Cleanup Worker hali ishlamagan bo'lsa:
+
+EXISTS
+
+o'zi:
+
+expireAt
+
+ni tekshirishi mumkin.
+
+---
+
+Agar:
+
+expireAt < now
+
+bo'lsa:
+
+delete(Storage)
+delete(Expirations)
+
+qilib:
+
+0
+
+qaytariladi.
+
+---
+
+# Mutex
+
+EXISTS:
+
+Storage
+Expirations
+
+o'qiydi.
+
+---
+
+Shuning uchun:
+
+Lock
+ ↓
+Read
+ ↓
+Unlock
+
+kerak.
+
+---
+
+# Race Condition
+
+Mutex bo'lmasa:
+
+SET
+DEL
+EXISTS
+
+bir vaqtda ishlashi mumkin.
+
+---
+
+Natija:
+
+Race Condition
+
+kelib chiqadi.
+
+---
+
+# Validation
+
+To'g'ri:
+
+EXISTS name
+
+---
+
+Noto'g'ri:
+
+EXISTS
+
+---
+
+Noto'g'ri:
+
+EXISTS name city
+
+(Hozircha faqat bitta key)
+
+---
+
+# EXISTS Qachon Foydali?
+
+Misollar:
+
+session mavjudligini tekshirish
+
+---
+
+cache mavjudligini tekshirish
+
+---
+
+user online ekanligini tekshirish
+
+---
+
+key yaratishdan oldin
+borligini tekshirish
+
+---
+
+# EXISTS Flow
+
+Client
+ ↓
+EXISTS name
+ ↓
+Validation
+ ↓
+Key Exists?
+ ↓
+Response
+
+---
+
+# Architecture
+
+EXISTS name
+ ↓
+Storage Check
+ ↓
+Response
+
+---
+
+# 15-ETAPda O'rganilganlar
+
+EXISTS Command
+Key Existence Check
+Integer Response
+Expired Key Handling
+Lazy Expiration
+Validation
+Mutex
+Race Condition
+GET vs EXISTS
+
+Bu etap Redis Clone'da key mavjudligini tez va samarali tekshirish uchun xizmat qiladi.

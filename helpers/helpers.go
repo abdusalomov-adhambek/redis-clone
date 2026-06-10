@@ -95,6 +95,8 @@ func Dispatch(conn net.Conn, command string, args []string) {
 		handlers.ExpireHandler(conn, args)
 	case "TTL":
 		handlers.TTLHandler(conn, args)
+	case "EXISTS":
+		handlers.ExistsHandler(conn, args)
 	default:
 		conn.Write([]byte("-ERR unknown command\r\n"))
 	}
