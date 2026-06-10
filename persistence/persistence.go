@@ -42,6 +42,7 @@ func Save() {
 // accepting connections. If the file does not exist the server starts with
 // an empty dataset, which is the normal first-run behaviour.
 func Load() {
+
 	var db variables.DB
 
 	// Read the raw JSON bytes from disk.
@@ -60,10 +61,8 @@ func Load() {
 		log.Println("database.json unmarshal error: ", err)
 		return
 	}
-
 	// Replace the in-memory maps with the restored data under the mutex.
 	variables.Mu.Lock()
-
 	variables.Storage = db.Storage
 	variables.Expirations = db.Expirations
 

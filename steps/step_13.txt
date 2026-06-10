@@ -1,0 +1,476 @@
+# Redis Clone — 13-ETAP Nazariyasi
+
+# ✅ EXPIRE Command
+
+EXPIRE:
+
+```txt id="q4j3s8"
+mavjud keyga
+TTL (Time To Live) qo'shish
+```
+
+uchun ishlatiladi.
+
+---
+
+# ✅ TTL (Time To Live)
+
+TTL:
+
+```txt id="8m9k2v"
+key qancha vaqt
+yashashini bildiradi
+```
+
+---
+
+Misol:
+
+```txt id="9q1x7h"
+EXPIRE name 60
+```
+
+↓
+
+```txt id="p3w5lu"
+60 soniyadan keyin
+name o'chadi
+```
+
+---
+
+# ✅ EXPIRE Maqsadi
+
+Oldin:
+
+```txt id="n4z6jt"
+SET name Adham
+```
+
+yaratiladi.
+
+Keyin:
+
+```txt id="4t6j9m"
+EXPIRE name 60
+```
+
+orqali TTL beriladi.
+
+---
+
+# ✅ EXPIRE Misoli
+
+```txt id="6z4m3q"
+SET name Adham
+```
+
+↓
+
+```txt id="2v7r5c"
+EXPIRE name 60
+```
+
+↓
+
+```txt id="9w8p1e"
+name keyi
+60 soniyadan keyin o'chadi
+```
+
+---
+
+# ✅ SET EX va EXPIRE Farqi
+
+### SET EX
+
+```txt id="1m8s5u"
+SET name Adham EX 60
+```
+
+↓
+
+```txt id="7p2r4n"
+yaratish
++
+TTL berish
+```
+
+bir vaqtda bajariladi.
+
+---
+
+### EXPIRE
+
+```txt id="5y6n8b"
+SET name Adham
+
+EXPIRE name 60
+```
+
+↓
+
+```txt id="3w4z9k"
+avval yaratish
+
+keyin TTL berish
+```
+
+---
+
+# ✅ Existing Key Validation
+
+EXPIRE ishlashidan oldin:
+
+```txt id="6u2j4f"
+key mavjudmi?
+```
+
+tekshiriladi.
+
+---
+
+Misol:
+
+```txt id="4e9w3s"
+EXPIRE unknown 60
+```
+
+---
+
+Agar key bo'lmasa:
+
+```txt id="9t1m8v"
+TTL qo'yib bo'lmaydi
+```
+
+---
+
+# ✅ Integer Response
+
+EXPIRE Redis'da:
+
+```txt id="1h5g7d"
+1
+```
+
+yoki
+
+```txt id="3j8k4p"
+0
+```
+
+qaytaradi.
+
+---
+
+# ✅ Response 1
+
+Agar key topilib:
+
+```txt id="5v2x7n"
+TTL muvaffaqiyatli qo'yilsa
+```
+
+Redis:
+
+```txt id="7y3p1c"
+1
+```
+
+qaytaradi.
+
+---
+
+# ✅ Response 0
+
+Agar key topilmasa:
+
+```txt id="8k6w2r"
+TTL qo'yilmaydi
+```
+
+Redis:
+
+```txt id="4m9s5e"
+0
+```
+
+qaytaradi.
+
+---
+
+# ✅ ExpireAt
+
+ExpireAt:
+
+```txt id="2c8j4n"
+key qachon o'chishini
+bildiruvchi vaqt
+```
+
+---
+
+Formula:
+
+```txt id="9n5v2k"
+expireAt = now + ttl
+```
+
+---
+
+Misol:
+
+```txt id="4w6e1q"
+now = 10:00
+
+ttl = 60
+```
+
+↓
+
+```txt id="7r2m9p"
+expireAt = 10:01
+```
+
+---
+
+# ✅ Expirations Map
+
+TTL lar:
+
+```txt id="6x3p8n"
+Expirations map
+```
+
+ichida saqlanadi.
+
+---
+
+Misol:
+
+```txt id="5n7k1w"
+name
+↓
+2026-06-10 12:00:00
+```
+
+---
+
+# ✅ TTL Update
+
+Agar keyda TTL bo'lsa:
+
+```txt id="2s8j4e"
+EXPIRE name 60
+```
+
+---
+
+Keyin:
+
+```txt id="7m3v1q"
+EXPIRE name 120
+```
+
+---
+
+Natija:
+
+```txt id="9k5w2r"
+eski expireAt
+ustiga yoziladi
+```
+
+---
+
+# ✅ Overwrite
+
+Overwrite:
+
+```txt id="1v8m6p"
+eski qiymatni
+yangisi bilan almashtirish
+```
+
+degani.
+
+---
+
+# ✅ Mutex
+
+EXPIRE:
+
+```txt id="3x5k9n"
+Expirations map
+```
+
+ga yozadi.
+
+---
+
+Shuning uchun:
+
+```txt id="4r2j8w"
+Lock
+ ↓
+Write
+ ↓
+Unlock
+```
+
+kerak.
+
+---
+
+# ✅ Race Condition
+
+Mutex bo'lmasa:
+
+```txt id="8m1v5q"
+bir goroutine
+TTL yozadi
+
+ikkinchisi
+TTL o'qiydi
+```
+
+---
+
+Natija:
+
+```txt id="6w9p2k"
+Race Condition
+```
+
+---
+
+# ✅ Persistence
+
+TTL o'zgarganidan keyin:
+
+```txt id="2n5k8v"
+Expirations map
+```
+
+ham o'zgargan bo'ladi.
+
+---
+
+# ✅ Persistence Update
+
+Shuning uchun:
+
+```txt id="5r8w3m"
+EXPIRE
+ ↓
+Expirations Update
+ ↓
+Save()
+```
+
+chaqiriladi.
+
+---
+
+# ✅ Save() Nega Kerak?
+
+Agar:
+
+```txt id="1x4m7p"
+Save()
+```
+
+chaqirilmasa:
+
+```txt id="6k8v2r"
+RAM:
+yangi TTL
+```
+
+---
+
+```txt id="9m3w5q"
+Disk:
+eski TTL
+```
+
+---
+
+Server restart:
+
+```txt id="7p2k6n"
+TTL yo'qoladi
+```
+
+---
+
+# ✅ EXPIRE Flow
+
+```txt id="4w8m1q"
+Client
+ ↓
+EXPIRE name 60
+ ↓
+Validation
+ ↓
+Key Exists?
+ ↓
+ExpireAt Calculate
+ ↓
+Expirations Update
+ ↓
+Save()
+ ↓
+Response
+```
+
+---
+
+# ✅ Architecture
+
+```txt id="8k3m5v"
+SET name Adham
+ ↓
+Storage
+```
+
+---
+
+```txt id="9w1k4n"
+EXPIRE name 60
+ ↓
+Expirations
+```
+
+---
+
+```txt id="3m7v2q"
+GET name
+ ↓
+TTL Check
+ ↓
+Value
+```
+
+---
+
+# ✅ 13-ETAPda O‘rganilganlar
+
+```txt id="7v2m8p"
+EXPIRE Command
+TTL
+Time To Live
+ExpireAt
+Existing Key Validation
+Integer Response
+TTL Assignment
+TTL Update
+Overwrite
+Mutex
+Race Condition
+Persistence Update
+Expirations Map
+```
+
+Bu etap Redis Clone'da keylarga keyinchalik TTL qo'shish va ularning yashash vaqtini boshqarish uchun xizmat qiladi.

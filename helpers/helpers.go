@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"goredisclone/handlers"
+	"goredisclone/persistence"
 	"goredisclone/variables"
 	"io"
 	"log"
@@ -57,6 +58,8 @@ func CleanupWorker() {
 			}
 		}
 		variables.Mu.Unlock()
+		persistence.Save()
+
 	}
 }
 
@@ -88,6 +91,10 @@ func Dispatch(conn net.Conn, command string, args []string) {
 		handlers.GetHandler(conn, args)
 	case "DEL":
 		handlers.DelHandler(conn, args)
+	case "EXPIRE":
+		handlers.ExpireHandler(conn, args)
+	case "TTL":
+		handlers.TTLHandler(conn, args)
 	default:
 		conn.Write([]byte("-ERR unknown command\r\n"))
 	}

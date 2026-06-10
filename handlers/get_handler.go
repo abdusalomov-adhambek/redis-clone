@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"goredisclone/persistence"
 	"goredisclone/variables"
 	"net"
 	"time"
@@ -36,6 +37,7 @@ func GetHandler(conn net.Conn, args []string) {
 		conn.Write([]byte("$-1\r\n"))
 		delete(variables.Storage, key)
 		delete(variables.Expirations, key)
+		persistence.Save()
 		return
 	}
 
