@@ -1,0 +1,419 @@
+# Redis Clone — 16-ETAP Nazariyasi
+
+# KEYS Command
+
+KEYS:
+
+storage ichidagi keylarni olish
+
+uchun ishlatiladi.
+
+---
+
+# KEYS Maqsadi
+
+KEYS yordamida:
+
+Redis ichida qanday keylar mavjud
+
+ekanligini ko'rish mumkin.
+
+---
+
+# KEYS Misoli
+
+Faraz qil:
+
+SET name Adham
+SET age 20
+SET city Tashkent
+
+---
+
+Keyin:
+
+KEYS *
+
+↓
+
+name
+age
+city
+
+---
+
+# Wildcard
+
+Wildcard:
+
+*
+
+belgisi.
+
+---
+
+Redis'da:
+
+KEYS *
+
+degani:
+
+barcha keylarni qaytar
+
+degan ma'noni bildiradi.
+
+---
+
+# Pattern Matching
+
+Pattern Matching:
+
+ma'lum qoidaga mos
+keylarni qidirish
+
+jarayoni.
+
+---
+
+Haqiqiy Redis:
+
+KEYS user:*
+
+yoki
+
+KEYS admin:*
+
+ham qo'llab-quvvatlaydi.
+
+---
+
+Bizning clone'da hozircha:
+
+KEYS *
+
+ishlaydi.
+
+---
+
+# Map Iteration
+
+Map Iteration:
+
+map elementlarini
+aylanib chiqish
+
+jarayoni.
+
+---
+
+Go'da:
+
+for key := range Storage
+
+orqali amalga oshiriladi.
+
+---
+
+# Key Collection
+
+Key Collection:
+
+topilgan keylarni
+bitta joyga yig'ish
+
+jarayoni.
+
+---
+
+Misol:
+
+Storage:
+name
+age
+city
+
+---
+
+Natija:
+
+[]string{
+    "name",
+    "age",
+    "city",
+}
+
+---
+
+# Slice
+
+Slice:
+
+bir nechta qiymatlarni
+saqlash uchun
+ishlatiladigan struktura
+
+hisoblanadi.
+
+---
+
+KEYS natijalari:
+
+[]string
+
+ichida saqlanadi.
+
+---
+
+# Array Response
+
+KEYS:
+
+bitta qiymat emas
+bir nechta qiymat
+
+qaytaradi.
+
+---
+
+Shuning uchun:
+
+Array Response
+
+hisoblanadi.
+
+---
+
+# RESP Array
+
+RESP'da Array:
+
+*<count>
+
+ko'rinishida bo'ladi.
+
+---
+
+Misol:
+
+*3
+$4
+name
+$3
+age
+$4
+city
+
+---
+
+# len()
+
+Go'da:
+
+len(slice)
+
+---
+
+Slice ichidagi:
+
+elementlar sonini
+
+qaytaradi.
+
+---
+
+Misol:
+
+keys := []string{
+    "name",
+    "age",
+}
+
+---
+
+len(keys)
+
+↓
+
+2
+
+---
+
+# fmt.Fprintf()
+
+Fprintf:
+
+formatlangan matnni
+conn ga yozish
+
+uchun ishlatiladi.
+
+---
+
+Misol:
+
+fmt.Fprintf(conn, "*%d\r\n", len(keys))
+
+---
+
+Natija:
+
+*2
+
+---
+
+# Bulk String
+
+Har bir key:
+
+Bulk String
+
+sifatida yuboriladi.
+
+---
+
+Misol:
+
+name
+
+↓
+
+$4
+name
+
+---
+
+# Mutex
+
+KEYS:
+
+Storage
+
+ni o'qiydi.
+
+---
+
+Shuning uchun:
+
+Lock
+ ↓
+Read
+ ↓
+Unlock
+
+kerak bo'ladi.
+
+---
+
+# Race Condition
+
+Mutex bo'lmasa:
+
+SET
+DEL
+KEYS
+
+bir vaqtda ishlashi mumkin.
+
+---
+
+Natija:
+
+Race Condition
+
+kelib chiqadi.
+
+---
+
+# Validation
+
+To'g'ri:
+
+KEYS *
+
+---
+
+Noto'g'ri:
+
+KEYS
+
+---
+
+Noto'g'ri:
+
+KEYS name
+
+(Bizning clone'da)
+
+---
+
+# KEYS Flow
+
+Client
+ ↓
+KEYS *
+ ↓
+Validation
+ ↓
+Lock
+ ↓
+Map Iteration
+ ↓
+Collect Keys
+ ↓
+Response
+
+---
+
+# Architecture
+
+KEYS *
+ ↓
+Storage
+ ↓
+[]string
+ ↓
+RESP Array
+ ↓
+Client
+
+---
+
+# KEYS Command Qachon Foydali?
+
+Misollar:
+
+Redis ichida
+qanday keylar borligini ko'rish
+
+---
+
+debug qilish
+
+---
+
+cache holatini tekshirish
+
+---
+
+ma'lumotlarni boshqarish
+
+---
+
+# 16-ETAPda O'rganilganlar
+
+KEYS Command
+Wildcard
+Pattern Matching
+Map Iteration
+Key Collection
+Slice
+Array Response
+RESP Array
+Bulk String
+len()
+fmt.Fprintf()
+Mutex
+Race Condition
+Validation
+
+Bu etap Redis Clone'da storage ichidagi barcha keylarni olish va RESP Array formatida qaytarishni o'rgatadi.
