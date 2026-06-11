@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"goredisclone/encode"
 	"goredisclone/variables"
 	"net"
 	"time"
@@ -12,22 +12,23 @@ func TTLHandler(conn net.Conn, args []string) {
 	defer variables.Mu.Unlock()
 
 	if len(args) != 1 {
-		conn.Write([]byte("-ERR wrong number of arguments\r\n"))
+		conn.Write([]byte(encode.EncodeError("ERR wrong number of arguments")))
 		return
 	}
 
 	key := args[0]
 	if _, ok := variables.Storage[key]; !ok {
-		fmt.Fprint(conn, ":-2\r\n")
+		conn.Write([]byte(encode.EncodeInteger(-2)))
 		return
 	}
 
 	expireAt, exists := variables.Expirations[key]
 	if !exists {
-		fmt.Fprint(conn, ":-1\r\n")
+		conn.Write([]byte(encode.EncodeNull()))
 		return
 	}
 
 	ttl := int(time.Until(expireAt).Seconds())
-	fmt.Fprintf(conn, ":%d\r\n", ttl)
+
+	conn.Write([]byte(encode.EncodeInteger(ttl)))
 }

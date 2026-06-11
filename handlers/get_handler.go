@@ -1,9 +1,10 @@
 package handlers
 
 import (
-	"fmt"
+	"goredisclone/encode"
 	"goredisclone/persistence"
 	"goredisclone/variables"
+	"log"
 	"net"
 	"time"
 )
@@ -14,7 +15,7 @@ import (
 func GetHandler(conn net.Conn, args []string) {
 	// Ensure at least one argument (key) is provided
 	if len(args) < 1 {
-		conn.Write([]byte("-ERR wrong number of arguments\r\n"))
+		conn.Write([]byte(encode.EncodeError("ERR wrong number of arguments")))
 		return
 	}
 
@@ -22,25 +23,30 @@ func GetHandler(conn net.Conn, args []string) {
 
 	// Lock storage for safe concurrent access
 	variables.Mu.Lock()
-	defer variables.Mu.Unlock()
-
+	log.Printf("GET %s\n", key)
 	// Check if the key exists in storage
 	value, exists := variables.Storage[key]
 	if !exists {
-		conn.Write([]byte("$-1\r\n"))
+		conn.Write([]byte(encode.EncodeNull()))
+		variables.Mu.Unlock()
 		return
 	}
 
+	log.Printf("GET %s = %s\n", key, value)
 	// Check if the key has an expiration and whether it has expired
 	expireAt, exists := variables.Expirations[key]
 	if exists && time.Now().After(expireAt) {
-		conn.Write([]byte("$-1\r\n"))
+		conn.Write([]byte(encode.EncodeNull()))
+
 		delete(variables.Storage, key)
 		delete(variables.Expirations, key)
+
+		variables.Mu.Unlock()
+
 		persistence.Save()
 		return
 	}
 
-	fmt.Fprintf(conn, "$%d\r\n%s\r\n", len(value), value)
-
+	conn.Write([]byte(encode.EncodeBulkString(value)))
+	variables.Mu.Unlock()
 }

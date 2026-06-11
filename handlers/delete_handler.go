@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"goredisclone/encode"
 	"goredisclone/persistence"
 	"goredisclone/variables"
 	"net"
@@ -20,8 +20,10 @@ func DelHandler(conn net.Conn, args []string) {
 		}
 	}
 
-	fmt.Fprintf(conn, ":%d\r\n", deleted)
+	conn.Write([]byte(encode.EncodeInteger(deleted)))
 	variables.Mu.Unlock()
 
-	persistence.Save()
+	if deleted > 0 {
+		persistence.Save()
+	}
 }

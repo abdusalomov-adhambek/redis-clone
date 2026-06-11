@@ -1,19 +1,19 @@
 package handlers
 
 import (
-	"fmt"
+	"goredisclone/encode"
 	"goredisclone/variables"
 	"net"
 )
 
 func KeysHandler(conn net.Conn, args []string) {
 	if len(args) != 1 {
-		conn.Write([]byte("-ERR wrong number of arguments\r\n"))
+		conn.Write([]byte(encode.EncodeError("ERR wrong number of arguments")))
 		return
 	}
 
 	if args[0] != "*" {
-		conn.Write([]byte("-ERR only '*' pattern supported\r\n"))
+		conn.Write([]byte(encode.EncodeError("ERR only '*' pattern supported")))
 		return
 	}
 
@@ -24,11 +24,7 @@ func KeysHandler(conn net.Conn, args []string) {
 		keys = append(keys, key)
 	}
 
+	conn.Write([]byte(encode.EncodeArray(keys)))
+
 	variables.Mu.Unlock()
-
-	fmt.Fprintf(conn, "*%d\r\n", len(keys))
-
-	for _, key := range keys {
-		fmt.Fprintf(conn, "$%d\r\n%s\r\n", len(key), key)
-	}
 }

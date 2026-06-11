@@ -4,11 +4,12 @@
 package handlers
 
 import (
+	"goredisclone/encode"
 	"net"
 )
 
 // PingHandler handles the PING command.
 // Responds with the RESP simple-string "+PONG" to confirm the server is alive.
 func PingHandler(conn net.Conn) {
-	conn.Write([]byte("+PONG\r\n"))
+	conn.Write([]byte(encode.EncodeSimpleString("PONG")))
 }

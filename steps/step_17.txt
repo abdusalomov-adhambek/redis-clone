@@ -1,0 +1,461 @@
+# Redis Clone — 18-ETAP Nazariyasi (RESP Encoder)
+
+# Encoder
+
+Encoder:
+
+Go ma'lumotlarini
+RESP formatiga o'tkazuvchi kod
+
+hisoblanadi.
+
+---
+
+# RESP Encoder Maqsadi
+
+RESP Encoder:
+
+server ichidagi javoblarni
+RESP protocol formatiga
+aylantiradi
+
+---
+
+Misol:
+
+OK
+
+↓
+
++OK\r\n
+
+---
+
+# RESP Response
+
+RESP Response:
+
+server clientga yuboradigan
+RESP formatdagi javob
+
+hisoblanadi.
+
+---
+
+# Serialization
+
+Serialization:
+
+Go object yoki qiymatni
+network orqali yuborish uchun
+matn formatiga o'tkazish
+
+jarayoni.
+
+---
+
+Misol:
+
+5
+
+↓
+
+:5\r\n
+
+---
+
+# Simple String
+
+Simple String:
+
+oddiy muvaffaqiyatli javoblar
+
+uchun ishlatiladi.
+
+---
+
+RESP format:
+
++<message>\r\n
+
+---
+
+Misol:
+
++OK\r\n
+
+---
+
++PONG\r\n
+
+---
+
+# EncodeSimpleString
+
+Vazifasi:
+
+matnni Simple String
+formatiga o'tkazish
+
+---
+
+Misol:
+
+EncodeSimpleString("OK")
+
+↓
+
++OK\r\n
+
+---
+
+# Error Response
+
+Error Response:
+
+xatolik haqida
+ma'lumot qaytaradi
+
+---
+
+RESP format:
+
+-<message>\r\n
+
+---
+
+Misol:
+
+-ERR invalid command\r\n
+
+---
+
+# EncodeError
+
+Vazifasi:
+
+errorlarni RESP Error
+formatiga o'tkazish
+
+---
+
+Misol:
+
+EncodeError("ERR invalid command")
+
+↓
+
+-ERR invalid command\r\n
+
+---
+
+# Bulk String
+
+Bulk String:
+
+matnli qiymatlarni
+qaytarish uchun ishlatiladi
+
+---
+
+RESP format:
+
+$<length>\r\n
+<data>\r\n
+
+---
+
+Misol:
+
+$5
+Adham
+
+---
+
+# Length Prefix
+
+Length Prefix:
+
+ma'lumot uzunligini
+oldindan ko'rsatish
+
+degani.
+
+---
+
+Misol:
+
+Adham
+
+↓
+
+5 ta harf
+
+---
+
+Shuning uchun:
+
+$5
+Adham
+
+ko'rinishida yuboriladi.
+
+---
+
+# EncodeBulkString
+
+Vazifasi:
+
+string qiymatlarni
+RESP Bulk Stringga
+aylantirish
+
+---
+
+Misol:
+
+EncodeBulkString("Adham")
+
+↓
+
+$5
+Adham
+
+---
+
+# Null Response
+
+Null Response:
+
+qiymat topilmaganda
+qaytariladi
+
+---
+
+RESP format:
+
+$-1\r\n
+
+---
+
+Misol:
+
+GET unknown
+
+↓
+
+$-1\r\n
+
+---
+
+# EncodeNull
+
+Vazifasi:
+
+mavjud bo'lmagan qiymatlarni
+RESP Null formatida qaytarish
+
+---
+
+# Integer Response
+
+Integer Response:
+
+sonli natijalarni
+qaytarish uchun ishlatiladi
+
+---
+
+RESP format:
+
+:<number>\r\n
+
+---
+
+Misol:
+
+:1
+
+---
+
+:100
+
+---
+
+# EncodeInteger
+
+Vazifasi:
+
+sonlarni RESP Integer
+formatiga o'tkazish
+
+---
+
+Misol:
+
+EncodeInteger(5)
+
+↓
+
+:5\r\n
+
+---
+
+# Array Response
+
+Array:
+
+bir nechta qiymatlarni
+qaytarish uchun ishlatiladi
+
+---
+
+RESP format:
+
+*<count>\r\n
+
+---
+
+Misol:
+
+*2
+$4
+name
+$3
+age
+
+---
+
+# EncodeArray
+
+Vazifasi:
+
+slice ichidagi qiymatlarni
+RESP Array formatiga o'tkazish
+
+---
+
+Misol:
+
+[]string{
+    "name",
+    "age",
+}
+
+↓
+
+*2
+$4
+name
+$3
+age
+
+---
+
+# CRLF
+
+CRLF:
+
+\r\n
+
+belgilari.
+
+---
+
+RESP protocolidagi har bir qator:
+
+CRLF
+
+bilan tugaydi.
+
+---
+
+# Protocol Compliance
+
+Protocol Compliance:
+
+RESP qoidalariga
+to'liq amal qilish
+
+degani.
+
+---
+
+Agar:
+
+\r\n
+
+to'g'ri ishlatilmasa:
+
+redis-cli
+
+javobni noto'g'ri o'qishi mumkin.
+
+---
+
+# Centralized Encoding
+
+Centralized Encoding:
+
+barcha javoblarni
+bitta encode package orqali
+boshqarish
+
+degani.
+
+---
+
+Misol:
+
+Handler
+ ↓
+Encode
+ ↓
+Client
+
+---
+
+Bu kodni:
+
+tozaroq
+o'qilishi osonroq
+kengaytirilishi qulayroq
+
+qiladi.
+
+---
+
+# Architecture
+
+Handler
+ ↓
+Encode Function
+ ↓
+RESP Response
+ ↓
+Client
+
+---
+
+# 18-ETAPda O'rganilganlar
+
+RESP Encoder
+RESP Response
+Serialization
+Simple String
+Bulk String
+Integer Response
+Array Response
+Null Response
+Length Prefix
+CRLF
+Protocol Compliance
+Centralized Encoding
+EncodeSimpleString
+EncodeError
+EncodeBulkString
+EncodeInteger
+EncodeArray
+EncodeNull
+
+Bu etap Redis Clone'da server javoblarini to'liq RESP protocol formatida yuborishni va redis-cli bilan mos ishlashni ta'minlaydi.

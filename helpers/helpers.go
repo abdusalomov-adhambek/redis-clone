@@ -3,6 +3,7 @@ package helpers
 import (
 	"bufio"
 	"fmt"
+	"goredisclone/encode"
 	"goredisclone/handlers"
 	"goredisclone/persistence"
 	"goredisclone/variables"
@@ -102,7 +103,7 @@ func Dispatch(conn net.Conn, command string, args []string) {
 	case "INCR":
 		handlers.INCRHandler(conn, args)
 	default:
-		conn.Write([]byte("-ERR unknown command\r\n"))
+		conn.Write([]byte(encode.EncodeError("ERR unknown command")))
 	}
 }
 

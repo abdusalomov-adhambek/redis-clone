@@ -1,42 +1,47 @@
 package handlers
 
 import (
+	"goredisclone/encode"
 	"goredisclone/persistence"
 	"goredisclone/variables"
-	"log"
 	"net"
 	"strconv"
 	"time"
 )
 
 func ExpireHandler(conn net.Conn, args []string) {
-	variables.Mu.Lock()
-	log.Println("ExpireHandler args:", args)
 	if len(args) != 2 {
-		variables.Mu.Unlock()
-		conn.Write([]byte("-ERR wrong number of arguments\r\n"))
+		conn.Write([]byte(encode.EncodeError("ERR wrong number of arguments")))
 		return
 	}
 
 	key := args[0]
+
 	ttl, err := strconv.Atoi(args[1])
 	if err != nil {
-		variables.Mu.Unlock()
-		conn.Write([]byte("-ERR wrong expire time\r\n"))
+		conn.Write([]byte(encode.EncodeError("ERR wrong expire time")))
 		return
 	}
+
+	if ttl <= 0 {
+		conn.Write([]byte(encode.EncodeError("ERR expire time must be positive")))
+		return
+	}
+
+	variables.Mu.Lock()
 
 	_, exists := variables.Storage[key]
 	if !exists {
 		variables.Mu.Unlock()
-		conn.Write([]byte(":0\r\n"))
+		conn.Write([]byte(encode.EncodeInteger(0)))
 		return
 	}
-	expireAt := time.Now().Add(time.Duration(ttl) * time.Second)
 
+	expireAt := time.Now().Add(time.Duration(ttl) * time.Second)
 	variables.Expirations[key] = expireAt
+
 	variables.Mu.Unlock()
 
 	persistence.Save()
-	conn.Write([]byte(":1\r\n"))
+	conn.Write([]byte(encode.EncodeInteger(1)))
 }
