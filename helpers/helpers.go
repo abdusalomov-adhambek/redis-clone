@@ -99,6 +99,8 @@ func Dispatch(conn net.Conn, command string, args []string) {
 		handlers.ExistsHandler(conn, args)
 	case "KEYS":
 		handlers.KeysHandler(conn, args)
+	case "INCR":
+		handlers.INCRHandler(conn, args)
 	default:
 		conn.Write([]byte("-ERR unknown command\r\n"))
 	}
