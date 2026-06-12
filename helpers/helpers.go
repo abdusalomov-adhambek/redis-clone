@@ -102,6 +102,8 @@ func Dispatch(conn net.Conn, command string, args []string) {
 		handlers.KeysHandler(conn, args)
 	case "INCR":
 		handlers.INCRHandler(conn, args)
+	case "MGET":
+		handlers.MGetHandler(conn, args)
 	default:
 		conn.Write([]byte(encode.EncodeError("ERR unknown command")))
 	}

@@ -29,3 +29,15 @@ func EncodeArray(l []string) string {
 	}
 	return result
 }
+
+func EncodeArrayWithNulls(l []any) string {
+	result := "*" + strconv.Itoa(len(l)) + "\r\n"
+	for _, s := range l {
+		if s == nil {
+			result += EncodeNull()
+		} else {
+			result += EncodeBulkString(s.(string))
+		}
+	}
+	return result
+}
