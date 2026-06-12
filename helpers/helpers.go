@@ -3,6 +3,7 @@ package helpers
 import (
 	"bufio"
 	"fmt"
+	"goredisclone/auth"
 	"goredisclone/encode"
 	"goredisclone/handlers"
 	"goredisclone/persistence"
@@ -20,8 +21,12 @@ import (
 func HandleConnection(conn net.Conn) {
 	fmt.Println("new client connection: ", conn.RemoteAddr())
 
-	defer conn.Close()
-	reader := bufio.NewReader(conn)
+	defer func() {
+		auth.AuthRemove(conn)
+		conn.Close()
+	}()
+
+	reader := bufio.NewReader(conn) // buffered reader for efficient RESP frame parsing
 
 	for {
 		args, err := ParseRESP(reader)
@@ -39,7 +44,7 @@ func HandleConnection(conn net.Conn) {
 			continue
 		}
 
-		command := strings.ToUpper(args[0])
+		command := strings.ToUpper(args[0]) // normalized command name from the first RESP element
 		Dispatch(conn, command, args[1:])
 	}
 }
@@ -67,14 +72,14 @@ func CleanupWorker() {
 // parseCommand splits a raw message into a command name and its arguments.
 // The command is normalized to uppercase.
 func ParseCommand(message string) (string, []string) {
-	tokens := strings.Fields(message)
+	tokens := strings.Fields(message) // raw message split into whitespace-separated tokens
 
 	if len(tokens) == 0 {
 		return "", nil
 	}
 
-	command := strings.ToUpper(tokens[0])
-	args := tokens[1:]
+	command := strings.ToUpper(tokens[0]) // first token normalized to uppercase
+	args := tokens[1:]                    // remaining tokens are the command arguments
 
 	return command, args
 }
@@ -83,13 +88,25 @@ func ParseCommand(message string) (string, []string) {
 // Unknown commands return an error response to the client.
 func Dispatch(conn net.Conn, command string, args []string) {
 	log.Printf("Dispatching command: %s %#v\n", command, args)
+
+	if !auth.IsAuthenticated(conn) && command != "AUTH" && command != "PING" {
+		conn.Write([]byte(encode.EncodeError("NOAUTH Authentication required.")))
+		return
+	}
+
 	switch command {
+	case "AUTH":
+		auth.Auth(conn, args)
 	case "PING":
 		handlers.PingHandler(conn)
 	case "SET":
 		handlers.SetHanlder(conn, args)
+	case "MSET":
+		handlers.MSetHandler(conn, args)
 	case "GET":
 		handlers.GetHandler(conn, args)
+	case "MGET":
+		handlers.MGetHandler(conn, args)
 	case "DEL":
 		handlers.DelHandler(conn, args)
 	case "EXPIRE":
@@ -102,8 +119,6 @@ func Dispatch(conn net.Conn, command string, args []string) {
 		handlers.KeysHandler(conn, args)
 	case "INCR":
 		handlers.INCRHandler(conn, args)
-	case "MGET":
-		handlers.MGetHandler(conn, args)
 	default:
 		conn.Write([]byte(encode.EncodeError("ERR unknown command")))
 	}
@@ -143,7 +158,7 @@ func ParseRESP(reader *bufio.Reader) ([]string, error) {
 		return nil, fmt.Errorf("count must be positive")
 	}
 
-	args := make([]string, 0, count)
+	args := make([]string, 0, count) // pre-allocated result slice, one entry per RESP element
 	for len(args) < count {
 		// Each element begins with a bulk-string header: '$<length>\r\n'.
 		bulkHeader, err := reader.ReadString('\n')
@@ -163,7 +178,7 @@ func ParseRESP(reader *bufio.Reader) ([]string, error) {
 			return nil, err
 		}
 
-		if length <= 0 {
+		if length < 0 {
 			return nil, fmt.Errorf("length must be positive")
 		}
 

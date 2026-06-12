@@ -7,12 +7,14 @@ import (
 	"time"
 )
 
+// ExistsHandler handles the EXISTS command.
+// Returns 1 if the key exists and has not expired, 0 otherwise.
 func ExistsHandler(conn net.Conn, args []string) {
 	if len(args) != 1 {
 		_, _ = conn.Write([]byte(encode.EncodeError("ERR wrong number of arguments for 'exists' command")))
 		return
 	}
-	key := args[0]
+	key := args[0] // key to check for existence
 
 	variables.Mu.Lock()
 	defer variables.Mu.Unlock()
@@ -23,7 +25,7 @@ func ExistsHandler(conn net.Conn, args []string) {
 		return
 	}
 
-	expireAt, exists := variables.Expirations[key]
+	expireAt, exists := variables.Expirations[key] // registered expiration timestamp, if any
 	if exists && time.Now().After(expireAt) {
 		delete(variables.Storage, key)
 		delete(variables.Expirations, key)

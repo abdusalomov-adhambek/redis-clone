@@ -14,13 +14,13 @@ import (
 // that periodically removes expired keys, and then entering an accept loop
 // that spawns a new goroutine for every incoming client connection.
 func main() {
-	port := ":8001"
+	port := ":8001" // TCP address the server binds to
 
 	// Start persistence load in the background
 	persistence.Load()
 
 	// Start TCP listener on the given port
-	listener, err := net.Listen("tcp", port)
+	listener, err := net.Listen("tcp", port) // TCP listener that accepts incoming connections
 	if err != nil {
 		panic(err)
 	}
@@ -32,7 +32,7 @@ func main() {
 
 	// Accept incoming client connections in a loop
 	for {
-		conn, err := listener.Accept()
+		conn, err := listener.Accept() // newly accepted client connection
 		if err != nil {
 			fmt.Println("connectoin error:", err)
 			continue

@@ -20,8 +20,8 @@ func SetHanlder(conn net.Conn, args []string) {
 		return
 	}
 
-	key := args[0]
-	value := args[1]
+	key := args[0]   // key to store
+	value := args[1] // value to associate with the key
 
 	// Lock storage for safe concurrent access
 	variables.Mu.Lock()
@@ -30,7 +30,7 @@ func SetHanlder(conn net.Conn, args []string) {
 	if len(args) == 4 {
 		if strings.ToUpper(args[2]) == "EX" {
 
-			ttl, err := strconv.Atoi(args[3])
+			ttl, err := strconv.Atoi(args[3]) // TTL in seconds from the EX option
 			if err != nil {
 				conn.Write([]byte(encode.EncodeError("ERR invalid TTL")))
 				variables.Mu.Unlock()

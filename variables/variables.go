@@ -4,6 +4,7 @@
 package variables
 
 import (
+	"net"
 	"sync"
 	"time"
 )
@@ -14,6 +15,12 @@ var Storage = make(map[string]string)
 // Expirations maps each key to the absolute time at which it expires.
 // Keys without an entry here never expire.
 var Expirations = make(map[string]time.Time)
+
+// Password is the server password clients must supply via AUTH.
+var Password = "1"
+
+// AuthenticatedClients tracks which active connections have passed AUTH.
+var AuthenticatedClients = map[net.Conn]bool{}
 
 // Mu protects Storage and Expirations from concurrent read/write races.
 var Mu sync.Mutex

@@ -19,7 +19,7 @@ func GetHandler(conn net.Conn, args []string) {
 		return
 	}
 
-	key := args[0]
+	key := args[0] // key to retrieve
 
 	// Lock storage for safe concurrent access
 	variables.Mu.Lock()
